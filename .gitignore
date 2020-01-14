@@ -274,3 +274,16 @@ TSWLatexianTemp*
 
 # Makeindex log files
 *.lpz
+MainThesisFile.aux
+MainThesisFile.bbl
+MainThesisFile.blg
+MainThesisFile.fdb_latexmk
+MainThesisFile.fls
+MainThesisFile.lof
+MainThesisFile.log
+MainThesisFile.lot
+MainThesisFile.out
+MainThesisFile.synctex.gz
+MainThesisFile.toc
+MainThesisFile.upa
+MainThesisFile.upb
