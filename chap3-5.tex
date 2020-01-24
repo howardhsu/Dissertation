@@ -452,7 +452,7 @@ To learn such an encoder $E(x)$, researchers need to define a general proxy task
 The proxy task also needs to be self-supervised as the training corpora are unlabeled and can be as large as the corpus for word embeddings.
 
 Language Model is a natural choice for such a proxy task, which aims to generate the rest texts given the input is corrupted from a piece of text.
-Recent years of representation learning for NLP has a large focus on language models from large-scale unlabeled corpora, such as Elmo\cite{peters2018deep}, GPT/GPT2\cite{radford2018improving}, BERT\cite{devlin2018bert}, XLNet\cite{yang}, RoBERTa\cite{liu2019roberta}, Albert\cite{lan}, electra\cite{stanford}.
+Recent years of representation learning for NLP has a large focus on language models from large-scale unlabeled corpora, such as Elmo\cite{peters2018deep}, GPT/GPT2\cite{radford2018improving,radford2019language}, BERT\cite{devlin2018bert}, XLNet\cite{yang2019xlnet}, RoBERTa\cite{liu2019roberta}, ALBERT\cite{lan2019albert}, ELECTRA\cite{clark2019electra}.
 The idea behind the progress is that even though the word embedding \cite{mikolov2013distributed,pennington2014glove} layer (in a typical neural network for NLP) is trained from large-scale corpora, training a wide variety of neural architectures that encode contextual representations only from the limited supervised data on end tasks is insufficient.
 
 BERT\cite{devlin2018bert} is one of the key innovations in the recent progress.
@@ -687,7 +687,7 @@ One important application regarding this kind of knowledge is a recommendation, 
 Typically these models aim to learn users and items profile, such as using matrix factorization based on click-through data.
 Unfortunately, existing recommendation models aim to learn static user and item profiles.
 These static profiles cannot capture the changes in users' needs.
-As such, conversational recommendation \cite{neurips,cmu} is a novel type of task that allows using an interactive dialogue to collect users' up-to-date preference to update the user profile.
+As such, conversational recommendation \cite{li2018towards,kang2019recommendation} is a novel type of task that allows using an interactive dialogue to collect users' up-to-date preference to update the user profile.
 Although existing research in conversational recommendation aims to update the user profile in the hidden space, modeling users' profile as a knowledge graph has the following two (2) benefits: (1) it allows for easier updates and maintenance of user profile for long-term use given the semantics of the hidden space is mostly undefined and determined by random initialization; (2) it allows for interpretability given the discrete structure of knowledge graph.
 
 To this end, a user's profile can be ideally represented as a knowledge graph, which requires frequent updates, even in one turn of a dialogue between the AI agent and a user.
