@@ -474,6 +474,9 @@ Inspired by these observations, I introduce a lifelong learning style of trainin
 
 To address the challenges, I propose a lifelong learning style training by introducing extra training tasks within the well-known pre-training and fine-tuning framework.
 I explore two (2) training task (or step) into the existing framework: post-training and pre-tuning, as depicted in \ref{chap4:fig:pt}.
+
+TODO copy the figure here.
+
 Post-training aims to adapt pre-training LM from general text to domain-specific text, whereas pre-tuning aims to adapt pre-trained LM to a particular task.
 
 \subsection{-- Post-training of Language Models}
@@ -659,7 +662,7 @@ Besides the input, we further adapt BERT to the output of RCRC with an auxiliary
 The design of this auxiliary objective is to mimic a prediction of a textual span in RCRC, which aims to predict the token spans of an answer randomly inserted in the review or \textit{NO ANSWER} if a randomly drawn negative answer appears.
 The implementation of both the auxiliary objective and the RCRC model is similar to BERT for SQuAD 2.0 \cite{rajpurkar2018know}, so we omit them for brevity.
 After pre-tuning, we fine-tune using the $(\text{RC})_2$ dataset to show the performance of RCRC.
-The results of RCRC is discussed in \ref{Chap6:sec:rcrc}.
+The results of RCRC is discussed in \ref{chap6:sec:rcrc}.
 
 
 \chapter{Lifelong Graph Representation Learning}
