@@ -6,12 +6,12 @@ Learning word embeddings \cite{mnih2007three,mikolov2013efficient,mikolov2013dis
 has received a great deal of attention due to its success in numerous NLP applications, e.g., named entity recognition \cite{sienvcnik2015adapting}, sentiment analysis \cite{maas2011learning} and syntactic parsing \cite{durrett2015neural}.
 The key to the success of word embeddings is that a large-scale corpus can be turned into a huge number (e.g., billions) of training examples.
 
-Two implicit assumptions are often made about the effectiveness of embeddings to down-stream tasks: 
+There are two implicit assumptions are often made about the effectiveness of embeddings to down-stream tasks: 
 1) the training corpus for embedding is available and much larger than the training data of the down-stream task; 2) the topic (domain) of the embedding corpus is closely aligned with the topic of the downstream task.
 However, many real-life applications do not meet both assumptions.
 
 In most cases, the in-domain corpus is of limited size, which is insufficient for training good embeddings. 
-In applications, researchers and practitioners often simply use some general-purpose embeddings trained using a very large general-purpose corpus (which satisfies the first assumption) covering almost all possible topics, e.g., the  GloVe embeddings \cite{pennington2014glove} trained using 840 billion tokens covering almost all topics/domains on the Web. Such embeddings have been shown to work reasonably well in many domain-specific tasks. This is not surprising as the meanings of a word are largely shared across domains and tasks. However, this solution violates the second assumption, which often leads to sub-optimal results for domain-specific tasks, as shown in our experiments.
+In applications, researchers and practitioners often simply use some general-purpose embeddings trained using a very large general-purpose corpus (which satisfies the first assumption) covering almost all possible topics, e.g., the GloVe embeddings \cite{pennington2014glove} trained using 840 billion tokens covering almost all topics/domains on the Web. Such embeddings have been shown to work reasonably well in many domain-specific tasks. This is not surprising as the meanings of a word are largely shared across domains and tasks. However, this solution violates the second assumption, which often leads to sub-optimal results for domain-specific tasks, as shown in our experiments.
 One obvious explanation for this is that the general-purpose embeddings do provide some useful information for many words in the domain task, but their embedding representations may not be ideal for the domain and in some cases, they may even conflict with the meanings of the words in the task domain because words often have multiple senses or meanings.
 For example, we have a task in the programming domain, which has the word ``Java''. A large-scale general-purpose corpus, which is very likely to include texts about coffee shops, supermarkets, the Java island of Indonesia, etc., can easily squeeze the room for representing ``Java''' context words like ``function'', ``variable'' or ``Python'' in the programming domain.
 This results in a poor representation of the word ``Java'' for the programming task.  
@@ -27,9 +27,11 @@ To solve this problem and also the limited in-domain corpus size problem, cross-
 These methods allow some in-domain words to leverage the general-purpose embeddings in the hope that the meanings of these words in the general-purpose embeddings do not deviate much from the in-domain meanings of these words. The embeddings of these words can thus be improved. However, these methods cannot improve the embeddings of many other words with domain-specific meanings (e.g., ``Java'').
 Further, some words in the general-purpose embeddings may carry meanings that are different from those in the task domain. 
 
+This chapter is organized in two sections: we first address the problem of learning word embeddings for a new domain in a lifelong learning setting; then we discuss how to leverage both general and domain-specific embeddings. 
+
 \section{Lifelong Domain Word Embeddings}
 
-As a result, we propose a novel direction for domain embedding learning by expanding the in-domain corpus. The problem in this new direction can be stated as follows:
+We propose a novel direction for domain embedding learning by expanding the in-domain corpus. The problem in this new direction can be stated as follows:
 
 \textbf{Problem statement}: We assume that the learning system has seen $n$ domain corpora in the past: $D_{1:n}=\{D_1, \dots, D_n\}$, when a new domain corpus $D_{n+1}$ comes with a certain task, the system automatically generates word embeddings for the $(n+1)$-th domain by leveraging some useful information or knowledge from the past $n$ domains.
 
@@ -43,9 +45,9 @@ The main challenges of this problem are 2-fold:
 
 To deal with the first challenge, for a word in the new domain, L-DEM learns to identify similar contexts of the word in the past domains. Here the context of a word means the surrounding words of that word in a domain corpus. We call such context \emph{domain context} (of a word). For this, we introduce a multi-domain meta-learner that can identify similar (or relevant) domain contexts that can be later used in embedding learning in the new domain. To tackle the second challenge, L-DEM augments the new domain corpus with the relevant domain contexts (knowledge) produced by the meta-learner from the past domain corpora and uses the combined data to train the embeddings in the new domain. For example, the word ``Java'' in the programming domain (the new domain), the meta-learner will produce similar domain contexts from some previous domains like a programming language, software engineering, operating systems, etc. These domain contexts will be combined with the new domain corpus for ``Java" to train the new domain embeddings.
 
-%\section{Related Works}
-\textbf{Related Works}\\
+\textbf{Related Works}
 \label{chap3:rw}
+
 Learning word embeddings has been studied for a long time \cite{mnih2007three}. 
 Many earlier methods used complex neural networks \cite{mikolov2013linguistic}.
 More recently, a simple and effective unsupervised model called skip-gram (or word2vec in general) \cite{mikolov2013distributed,mikolov2013linguistic} was proposed to turn a plain text corpus into large-scale training examples without any human annotation.
@@ -69,10 +71,11 @@ The way we use meta-learning is about domain-independent learning \cite{JMLR:v17
 
 \section{L-DEM Approach}
 \label{chap3:sec:ldem}
-The proposed L-DEM system is depicted in Figure \ref{chap3:fig:fr}.
+
+The proposed L-DEM system is depicted in \ref{chap3:fig:fr}.
 Given a series of past domain corpora $D_{1:n}=\{D_1, D_2, \dots, D_n\}$, and a new domain corpus $D_{n+1}$, the system learns to generate the new domain embeddings by exploiting the relevant information or knowledge from the past $n$ domains.
 Firstly, a base meta-learner $M$ is trained from the first $m$ past domains (not shown in the figure) (see Section 4), which is later used to predict the similarities of \emph{domain contexts} of the same words from two different domains.
-Secondly, assuming the system has seen $n-m$ past domain corpora $D_{m+1:n}$, when a new domain $D_{n+1}$ comes, the system produces the embeddings of the $(n+1)$-th domain as follows (discussed in Section 5):
+Secondly, assuming the system has seen $n-m$ past domain corpora $D_{m+1:n}$, when a new domain $D_{n+1}$ comes, the system produces the embeddings of the $(n+1)$-th domain as follows:
 (i) the base meta-learner first is adapted to the $(n+1)$-th domain as $M_{n+1}$ (not shown in the figure) using the $(n+1)$-th domain corpus;
 (ii) for each word $w_{i}$ in the new domain, the system uses the adapted meta-learner $M_{n+1}$ to identify every past domain $j$ that has the word $w_{i}$ with domain context similar to $w_{i}$'s domain context in the new domain (we simply call such domain context from a past domain \emph{similar domain context});
 (iii) all new domain words' similar domain contexts from all past domain corpora $D_{m+1:n}$ are aggregated. This combined set is called the \textit{relevant past knowledge} and denoted by $\mathcal{A}$;
@@ -80,22 +83,22 @@ Secondly, assuming the system has seen $n-m$ past domain corpora $D_{m+1:n}$, wh
 The meta-learner here plays a central role in identifying relevant knowledge from past domains.
 We propose a pairwise model as the meta-learner. 
 
-To enable the above operations, we need a knowledge base (KB), which retains the information or knowledge obtained from the past domains. Once the $(n+1)$-th domain embedding is done, its information is also saved in the KB for future use. We discuss the detailed KB content in Section 5.1.
+To enable the above operations, we need a knowledge base (KB), which retains the information or knowledge obtained from the past domains. Once the $(n+1)$-th domain embedding is done, its information is also saved in the KB for future use.
 \begin{figure}[t]
     \label{fig:ll}
     \centering    
-    \includegraphics[width=4.5in]{fig/ijcai18_ll.png}
+    \includegraphics[width=5.0in]{fig/ijcai18_ll.png}
         \caption{Overview of L-DEM}
         \label{fig:fr}
     \end{figure}
 
-%\section{Base Meta-Learner}
-\textbf{Base Meta-Learner}\\
+\textbf{Base Meta-Learner}
+
 This section describes the base meta-learner, which identifies similar domain contexts. The input to the meta-learner is a pair of word feature vectors (we simply call them \emph{feature vectors}) representing the domain contexts of the same word from two similar / non-similar domains.
 The output of the meta-learner is a similarity score of the two feature vectors.
 
-%\subsection{Training Examples}
-\textbf{Training Examples}\\
+\textbf{Training Examples}
+
 We assume the number of past domains is large and we hold out the first $m$ domains, where $m \ll n$, as the domains to train and test the base meta-learner.
 In practice, if $n$ is small, the $m$ domains can be sampled from the $n$ domains.
 The $m$ domains are split into 3 disjoint sets: training domains, validation domains, and testing domains.
@@ -103,7 +106,7 @@ The $m$ domains are split into 3 disjoint sets: training domains, validation dom
 To enable the meta-learner to predict the similarity score, we need both positive examples (from similar domains) and negative examples (from dissimilar domains).
 Since each past domain can be unique (which makes it impossible to have a positive pair from two similar domains), we sub-sample each domain corpus $D_j$ into 2 sub-corpora: $D_{j, k} \sim P(D_i)$, where $1\le j\le m$ and $k=\{1, 2\}$.
 This sampling process is done by drawing documents (each domain corpus is a set of documents) uniformly at random from $D_j$.
-The number of documents that a domain sub-corpus can have is determined by a pre-defined sub-corpus (file) size (explained in Section 6).
+The number of documents that a domain sub-corpus can have is determined by a pre-defined sub-corpus (file) size.
 We enforce the same file size across all sub-corpora so feature vectors from different sub-corpora are comparable.
 
 Next, we produce feature vectors from domain sub-corpora.
@@ -114,8 +117,8 @@ A pair of feature vectors $(\mathbf{x}_{w_{i, j, k}}, \mathbf{x}_{w_{i, j, k'}})
 whereas $(\mathbf{x}_{w_{i, j, k}}, \mathbf{x}_{w_{i, j', k}})$ with $j\neq j'$ forms a negative example.
 Details of settings are in Section 6.
 
-%\subsection{Pairwise Model of the Meta-learner}
-\textbf{Pairwise Model of the Meta-learner}\\
+\textbf{Pairwise Model of the Meta-learner}
+
 We train a small but efficient pairwise model (meta-learner) to learn a similarity score. 
 Making the model small but high-throughput is crucial.
 This is because the meta-learner is required in a high-throughput inference setting, where every word from a new domain needs to have context similarities with the same word from all past domains. 
@@ -131,16 +134,16 @@ The model is parameterized as follows:
 where $|\cdot|_1$ is the $l_1$-norm, $\text{abs}(\cdot)$ computes the absolute value of element-wise subtraction ($-$) as the matching function, $\bm{W}$s and $b$ are weights and $\sigma (\cdot)$ is the sigmoid function.
 The majority of trainable weights resides in $\bm{W}_1$, which learns continuous features from the set of $f$ context words.
 These weights can also be interpreted as a general embedding matrix over $V_{\textit{wf}}$. 
-These embeddings (not related to the final domain embeddings in Section \ref{chap3:sec:aet}) help to learn the representation of domain-specific words.
+These embeddings (not related to the final domain embeddings in Chapter \ref{chap3:sec:aet}) help to learn the representation of domain-specific words.
 As mentioned earlier, we train the base meta-learner $M$ over a hold-out set of $m$ domains.
 We further fine-tune the base meta-learner using the new domain corpus for its domain use, as described in the next section.
 
-%\section{Embedding Using Past Relevant Knowledge}
 \textbf{Embedding Using Past Relevant Knowledge}
+
 We now describe how to leverage the base meta-learner $M$, the rest $n-m$ past domain corpora, and the new domain corpus $D_{n+1}$ to produce the new domain embeddings.
 
-%\subsection{Identifying Context Words from the Past}
-\textbf{Identifying Context Words from the Past}\\
+\textbf{Identifying Context Words from the Past}
+
 When it comes to borrowing relevant knowledge from past domains, the first problem is what to borrow.
 It is well-known that the embedding vector quality for a given word is determined by the quality and richness of that word's contexts.
 We call a word in a domain context of a given word a \emph{context word}.
@@ -164,14 +167,14 @@ Lines 2-4 prepare the new domain knowledge.
 The BuildFeatureVector function produces a set of feature vectors as $E_{n+1}=\{ \mathbf{x}_{w_{i, n+1, k}} | w_i \in V_{j} \text{ and } k=\{1, 2\}\}$ over two sub-corpora of the new domain corpus $D_{n+1}$.
 The ScanContextWord function builds a set of key-value pairs, where the key is a word from the new domain $w_{i, n+1}$ and the value $\mathcal{C}_{w_{i,n+1} } $ is a list of context words for the word $w_{i, n+1}$ from the new domain corpus. We use the same size of the context window as the word2vec model.
 
-%\subsubsection{Adapting Meta-learner}
-\textbf{Adapting Meta-learner}\\
+\textbf{Adapting Meta-learner}
+
 In line 5, AdaptMeta-learner adapts or fine-tunes the base meta-learner $\mathcal{K}.M$ to produce an adapted meta-learner $M_{n+1}$ for the new domain.
-A positive tuning example is sampled from two sub-corpora of the new domain $(\mathbf{x}_{w_{i, n+1, 1}}, \mathbf{x}_{w_{i, n+1, 2}})$ in the same way as described in Section 4.1.
+A positive tuning example is sampled from two sub-corpora of the new domain $(\mathbf{x}_{w_{i, n+1, 1}}, \mathbf{x}_{w_{i, n+1, 2}})$.
 A negative example is exampled as $(\mathbf{x}_{w_{i, n+1, 1}}, \mathbf{x}_{w_{i, j, 2}})$, where $m+1 \le j \le n$.
 The initial weights of $M_{n+1}$ are set as the trained weights of the base meta-learner $M$. 
  
-\begin{algorithm*}[H]
+\begin{algorithm*}
 \label{chap3:alg:ll}
 \LinesNumbered
 \DontPrintSemicolon
@@ -192,7 +195,7 @@ $\mathcal{A} \gets \emptyset$ \;
 
 \For{$(V_j, C_j, E_j) \in (V_{m+1:n}, C_{m+1:n}, E_{m+1:n})$}{
     $O \gets V_j \cap V_{n+1}$  \;
-    $F \gets \big\{(\mathbf{x}_{o, j, 1}, \mathbf{x}_{o, n+1, 1})|$  $\text{ }\text{ }\text{ }\text{ }\text{ }\text{ }\text{ }\text{ }\text{ }\text{ } o \in O \text{ and } \mathbf{x}_{o, j, 1} \in E_j \text{ and } \mathbf{x}_{o, n+1, 1} \in E_{n+1} \big\}$ \;
+    $F \gets \big\{(\mathbf{x}_{o, j, 1}, \mathbf{x}_{o, n+1, 1})|o \in O \text{ and } \mathbf{x}_{o, j, 1} \in E_j \text{ and } \mathbf{x}_{o, n+1, 1} \in E_{n+1} \big\}$ \;
     $S \gets M_{n+1}.\text{inference}( F )$ \;
     $O \gets \{o| o\in O \text{ and } S[o]\ge \delta \}$ \;
     \For{$o \in O$}{
@@ -204,8 +207,8 @@ $\mathcal{K}_{n+1} \gets (V_{n+1}, C_{n+1}, E_{n+1}) $ \;
 \Return{ $\mathcal{A}$}
 \end{algorithm*}
 
-%\subsubsection{Retriving Relevant Past Knowledge}
-\textbf{Retriving Relevant Past Knowledge}\\
+\textbf{Retriving Relevant Past Knowledge}
+
 Algorithm \ref{chap3:alg:ll} further produces the relevant past knowledge $\mathcal{A}$ from line 6 through line 16.
 Line 6 defines the variable that stores the relevant past knowledge.
 Lines 7-15 produce the relevant past knowledge $\mathcal{A}$ from past domains.
@@ -218,9 +221,9 @@ Lines 12-14 aggregate the context words for each word in $O$ from past word doma
 Line 16 simply stores the new domain knowledge for future use.
 Lastly, all relevant past knowledge $\mathcal{A}$ is returned.
 
-%\subsection{Augmented Embedding Training}
-\textbf{Augmented Embedding Training}\\
+\textbf{Augmented Embedding Training}
 \label{chap3:sec:aet}
+
 We now produce the new domain embeddings via a modified version of the skip-gram model \cite{mikolov2013distributed} that can take both the new domain corpus $D_{n+1}$ and the relevant past knowledge $\mathcal{A}$.
 Given a new domain corpus $D_{n+1}$ with the vocabulary $V_{n+1}$, the goal of the skip-gram model is to learn a vector representation for each word $w_{i} \in V_{n+1}$ in that domain
 (we omit the subscript $_{n+1}$ in $w_{i, n+1}$ for simplicity).
@@ -228,7 +231,7 @@ Assume the domain corpus is represented as a sequence of words $D_{n+1}=(w_1, \d
 \begin{equation}
 \label{chap3:eq:sg}
 \begin{split}
-\mathcal{L}_{D_{n+1}} =\sum_{t=1}^{T} \big( \sum_{w_c \in \mathcal{W}_{w_{t}} } \big(\log \sigma (\bm{u}_{w_t}^T\cdot \bm{v}_{w_c}) \\
+\mathcal{L}_{D_{n+1}} =\sum_{t=1}^{T} \big( \sum_{w_c \in \mathcal{W}_{w_{t}} } \big(\log \sigma (\bm{u}_{w_t}^T\cdot \bm{v}_{w_c})
 + \sum_{w_{c'} \in \mathcal{N}_{w_t} } \log \sigma(-\bm{u}_{w_t}^T\cdot \bm{v}_{w_{c'}} ) \big) \big) , 
 \end{split}
 \end{equation}
@@ -238,7 +241,7 @@ $\bm{u}$ and $\bm{v}$ are word vectors (or embeddings) we are trying to learn.
 The objective of skip-gram on data of relevant past knowledge $\mathcal{A}$ is as follows:
 \begin{equation}
 \begin{split}
-\mathcal{L}_{\mathcal{A}}=\sum_{(w_t, \mathcal{C}_{w_t} ) \in \mathcal{A}} \big( \sum_{w_c \in \mathcal{C}_{w_t}} \big( \log \sigma (\bm{u}_{w_t}^T\cdot \bm{v}_{w_c}) \\
+\mathcal{L}_{\mathcal{A}}=\sum_{(w_t, \mathcal{C}_{w_t} ) \in \mathcal{A}} \big( \sum_{w_c \in \mathcal{C}_{w_t}} \big( \log \sigma (\bm{u}_{w_t}^T\cdot \bm{v}_{w_c})
 + \sum_{w_{c'} \in \mathcal{N}_{w_t} } \log \sigma(-\bm{u}_{w_t}^T\cdot \bm{v}_{w_{c'}} ) \big) \big).
 \end{split}
 \end{equation}
@@ -252,13 +255,13 @@ We use the default hyperparameters of skip-gram model \cite{mikolov2013distribut
 
 \section{Results}
 \label{chap3:sec:exp}
-%We now evaluate the effectiveness of our DEM approach. 
+
 Following \cite{nayak2016evaluating},
 we use the performances of down-stream tasks to evaluate the proposed method. 
 We do not evaluate the learned embeddings directly as in \cite{mikolov2013distributed,pennington2014glove} because domain-specific dictionaries of similar / non-similar words are generally not available. Our down-stream tasks are text classification that usually requires fine-grained domain embeddings.
 
-%\subsection{Datasets}
-\textbf{Datasets}\\
+\textbf{Datasets}
+
 We use the Amazon Review datasets from \cite{HeMcA16a}, which is a collection of multiple-domain corpora. We consider each second-level category (the first level is department) as a domain and aggregate all reviews under each category as one domain corpus. This ends up with a rather diverse domain collection. 
 We first randomly select 56 ($m$) domains as the first $m$ past domains to train and evaluate the base meta-learner.
 Then from rest domains, we sample three random collections with 50, 100 and 200 ($n-m$) domains corpora, respectively, as three settings of past domains.
@@ -267,8 +270,8 @@ Due to the limited computing resource, we limit each past domain corpus up to 60
 We further randomly selected 3 rest domains (\emph{Computer Components} (CC), \emph{Kitchen Storage and Organization} (KSO) and \emph{Cats Supply} (CS)) as new domains for down-stream tasks. These give us three text classification problems, which have 13, 17, and 11 classes respectively. The tasks are topic-based classification rather than sentiment classification. 
 Since the past domains have different sizes (many have much less than 60 MB) and many real-world applications do not have big in-domain corpora, we set the size of the new domain corpora to be 10 MB and 30 MB to test the performance in the two settings.
 
-%\subsection{Evaluation of Meta-Learner}
-\textbf{Evaluation of Meta-Learner}\\
+\textbf{Evaluation of Meta-Learner}
+
 We select the top $f=5000$ words from all 56 domains' corpora as word features.
 Then we split the 56 domains into 39 domains for training, 5 domains for validation and 12 domains for testing.
 So the validation and testing domain corpora have no overlap with the training domain corpora.
@@ -279,7 +282,7 @@ This ends up with 80484 training examples, 6234 validation examples, and 20740 t
 For comparison, we train an SVM model as a baseline.
 The F1-score (for positive pairs) of SVM is 0.70, but the F1-score of the proposed base meta-learner model is \textbf{0.81}.
 
-\begin{table}[t]
+\begin{table}
 \begin{center}
 
 \begin{tabular}{l || c | c | c }
@@ -301,10 +304,10 @@ The F1-score (for positive pairs) of SVM is 0.70, but the F1-score of the propos
 To adapt the base meta-learner for each new domain. We sample 3000 words from each new domain, which results in slightly fewer than 6000 examples after ignoring all-zero feature vectors.
 We select 3500 examples for training, 500 examples for validation and 2000 examples for testing.
 The F1-scores on the test data are shown in Table 1.
-Finally, we empirically set $\delta=0.7$ as the threshold on the similarity score in Algorithm 1, which roughly doubled the number of training examples from the new domain corpus. 
+Finally, we empirically set $\delta=0.7$ as the threshold on the similarity score in Algorithm \ref{chap3:alg:ll}, which roughly doubled the number of training examples from the new domain corpus. 
 The size of the context window for building domain context is set to 5, which is the same as word2vec.
 
-\begin{table}[t]
+\begin{table}
 \begin{center}
 
 \scalebox{0.9}{
@@ -340,8 +343,8 @@ L-DEM 200D + ND 30M  &  \textbf{0.809}  &  \textbf{0.775}  &  \textbf{0.883} \\
 \label{chap3:table:pc}
 \end{table}
 
-%\subsection{Baselines and Our System}
-\textbf{Baselines and Our System}\\
+\textbf{Baselines and Our System}
+
 Unless explicitly mentioned, the following embeddings have 300 dimensions, which are the same size as many pre-trained embeddings (GloVec.840B \cite{pennington2014glove} or fastText English Wiki\cite{bojanowski2016enriching}).\\
 \textbf{No Embedding (NE)}: This baseline does not have any pre-trained word embeddings. The system randomly initializes the word vectors and train the word embedding layer during the training process of the downstream task.
 \\
@@ -360,8 +363,8 @@ We show that the embeddings trained from a small corpus alone are not good enoug
 We report the results on a similarity threshold of 0.18, which is the best threshold ranging from 0.15 to 0.20.\\
 \textbf{L-DEM Past Domains + New Domain (L-DEM [P]D + ND [X]M)}: These are different variations of our proposed method L-DEM. For example, ``L-DEM 200D + ND 30M'' denotes the embeddings trained from a 30MB new domain corpus and the relevant past knowledge from 200 past domains.
 
-%\subsection{Down-stream Tasks and Experiment Results}
-\textbf{Down-stream Tasks and Experiment Results}\\
+\textbf{Down-stream Tasks and Experiment Results}
+
 As indicated earlier, we use classification tasks from 3 new domains (``Computer Components'', ``Cats Supply'' and ``Kitchen Storage and Organization'') to evaluate the embeddings produced by our system and compare them with those of baselines. 
 These 3 new domains have 13, 17 and 11 classes (or product types), respectively.
 For each task, we randomly draw 1500 reviews from each class to make up the experiment data, from which we keep 10000 reviews for testing (to make the result more accurate) and split the rest 7:1 for training and validation, respectively.
@@ -387,12 +390,12 @@ This is because the diverse 200 domains are not similar to the new domains.
 The L-DENP 200D + ND 30M performs poorly indicating the proposed parametric meta-learner is useful, except the CC domain which is more general.
 
 \section{Fusion of General and Domain Word Embeddings}
-
-\subsection{-- Motivation}
+\label{chap3:sec:double}
+%\subsection{-- Motivation}
 The performance gain of domain word embeddings comes from the dense corpus focusing on a particular domain and the feature space dedicated to that particular domain. 
 Although domain word embeddings are good at domain-specific features, many NLP tasks also require good features for general words that are unlikely to be affected by a particular domain too, such as those stop words.
 As a result, those words are unlikely to be trained well due to the limited corpus of a particular domain, whereas general word embeddings have such an advantage by aggregating corpora from multiple domains together.
-In the end, for a particular end task, how to leverage the benefits from both types of embeddings is essential for the success of an end task.  
+To the end, for a particular end task, how to leverage the benefits from both types of embeddings is essential for the success of an end task.  
 
 \subsection{-- Approach}
 
@@ -404,18 +407,14 @@ The second embedding matrix $W^d$ represents domain embeddings pre-trained from 
 
 We do not allow these two embedding layers trainable because small training examples may lead to many unseen words in test data.
 If embeddings are tunable, the features for seen words' embeddings will be adjusted (e.g., forgetting useless features and infusing new features that are related to the labels of the training examples).
-And the CNN filters will adjust to the new features accordingly. 
-But the embeddings of unseen words from test data still have the old features that may be mistakenly extracted by CNN.
-Then we concatenate two embeddings $\mathbf{x}^{(1)}=\mathbf{x}^g \oplus \mathbf{x}^d$ and feed the hidden states to the rest layers of the network for the end task.
+%And the CNN filters will adjust to the new features accordingly. 
+But the embeddings of unseen words from test data still have the old features that may be mistakenly extracted by future layers.
+As such, we concatenate two embeddings $\mathbf{x}^{(1)}=\mathbf{x}^g \oplus \mathbf{x}^d$ and feed the hidden states to the rest layers of the network for the end task.
 
 \subsection{-- Result}
-We conducted experiments on two settings, one is in the same setting as for lifelong domain embeddings \cite{xumeta}; the other is for a sequence labeling task in sentiment analysis. We detail the architecture for aspect extraction later in \ref{chap6:nlp}.
+We conducted experiments on two settings, one is in the same setting as for lifelong domain embeddings \cite{xumeta}; the other is for a sequence labeling task in sentiment analysis. We detail the architecture for aspect extraction later in Chapter \ref{chap6:sec:sa}.
 
-\textbf{L-DEM for Text Classification}\\
-We evaluate two methods: (1) GloVe.840B\&ND 30M, which concatenates new domain only embeddings with GloVe.840B; (2) GloVe.840B\&L-DEM 200D + ND 30M, which concatenates our proposed embeddings with GloVe.840B. 
-The results of concatenating general and domain-specific embeddings are shown in \ref{chap3:table:concat}.
-Our method boosts the domain-specific parts of the embeddings further.
-Note the ideal LL setting is to perform L-DEM on all domain corpora of the pre-trained embeddings.).
+\textbf{L-DEM for Text Classification}
 
 \begin{table}
 \begin{center}
@@ -436,6 +435,11 @@ GloVe.840B\&L-DEM 200D+30M  &  \textbf{0.817}  &  \textbf{0.783}  &  \textbf{0.8
 %\caption{Results of concatenated embeddings with GloVe.840B}
 \end{table}
 
+We evaluate two methods: (1) GloVe.840B\&ND 30M, which concatenates new domain only embeddings with GloVe.840B; (2) GloVe.840B\&L-DEM 200D + ND 30M, which concatenates our proposed embeddings with GloVe.840B. 
+The results of concatenating general and domain-specific embeddings are shown in Chapter \ref{chap3:table:concat}.
+Our method boosts the domain-specific parts of the embeddings further.
+Note the ideal LL setting is to perform L-DEM on all domain corpora of the pre-trained embeddings.).
+
 %Note that we did not compare with the existing transfer learning methods~\cite{bollegala2017think,bollegala-maehara-kawarabayashi:2015:ACL-IJCNLP,yang-lu-zheng:2017:EMNLP2017} as our approaches focus on domain-specific words in a lifelong learning setting, which do not need the user to provide the source domain(s) that are known to be similar to the target domain. 
 
 %\section{Conclusions}
@@ -446,7 +450,7 @@ GloVe.840B\&L-DEM 200D+30M  &  \textbf{0.817}  &  \textbf{0.783}  &  \textbf{0.8
 \chapter{Lifelong Contextualized Representation Learning}
 \label{chap4:context}
 
-Beyond word embeddings that only carry independent word-level features, the meaning (thus feature) of a word is also heavily affected by its contexts.
+Beyond word embeddings that only carry independent word-level features, the meaning (thus features or representations) of a word is also heavily affected by its contexts.
 As a result, a good representation for an end task may not be only from a word embedding layer, but also from an encoder $E(x)$ that can consume a piece of text and provide representations for each word based on its nearby context in that sequence.
 To learn such an encoder $E(x)$, researchers need to define a general proxy task that is close to almost all end tasks so to learn features for those end tasks.
 The proxy task also needs to be self-supervised as the training corpora are unlabeled and can be as large as the corpus for word embeddings.
@@ -473,9 +477,15 @@ Inspired by these observations, I introduce a lifelong learning style of trainin
 \section{Lifelong Training}
 
 To address the challenges, I propose a lifelong learning style training by introducing extra training tasks within the well-known pre-training and fine-tuning framework.
-I explore two (2) training task (or step) into the existing framework: post-training and pre-tuning, as depicted in \ref{chap4:fig:pt}.
+I explore two (2) training task (or step) into the existing framework: post-training and pre-tuning, as depicted in \ref{chap4:fig:ll_train}.
 
-TODO copy the figure here.
+\begin{figure}
+\centering
+\includegraphics[width=5.5in]{fig/ll_train.png}
+    \caption{Lifelong stages of training}
+\label{chap4:fig:ll_train}
+\vspace{-3mm}
+\end{figure}
 
 Post-training aims to adapt pre-training LM from general text to domain-specific text, whereas pre-tuning aims to adapt pre-trained LM to a particular task.
 
@@ -487,10 +497,9 @@ I also incorporate tasks from a supervised learning corpus from a machine readin
 Results show that this task further improves the learned representation.
 As a result, post-training leverages knowledge from two sources: unsupervised domain reviews and supervised (yet out-of-domain) MRC data.
 
-BERT has two parameter intensive settings:
+BERT has two parameter intensive settings:\\
 \noindent
-$\textbf{BERT}_\textbf{BASE}$: 12 layers, 768 hidden dimensions and 12 attention heads (in transformer) with the total number of parameters, 110M;
-
+$\textbf{BERT}_\textbf{BASE}$: 12 layers, 768 hidden dimensions and 12 attention heads (in transformer) with the total number of parameters, 110M;\\
 \noindent
 $\textbf{BERT}_\textbf{LARGE}$: 24 layers, 1024 hidden dimensions and 16 attention heads (in transformer) with the total number of parameters, 340M.
 
@@ -519,7 +528,7 @@ As a result, the joint loss of post-training is defined as $\mathcal{L}=\mathcal
 One major issue of post-training on such a loss is the prohibitive cost of GPU memory usage.
 Instead of updating parameters over a batch, we divide a batch into multiple sub-batches and accumulate gradients on those sub-batches before parameter updates. This allows for a smaller sub-batch to be consumed in each iteration.
 
-\begin{algorithm}
+\begin{algorithm}[t]
 \label{chap4:alg:post-training}
 \LinesNumbered
 \DontPrintSemicolon
@@ -545,7 +554,46 @@ Line 6 accumulates the gradients produced by backpropagation from the partial jo
 Only the gradients $\nabla_\Theta$ are kept throughout all iterations and used to update parameters (based on the chosen optimizer) in line 8.
 %We detail the hyper-parameter settings of this algorithm in Sec. %\ref{chap4:sec:hyp}.
 
-\textbf{Post-training datasets}\\
+\textbf{Setting for End Tasks}
+
+We aim for 3 review-based tasks to evaluate the post-trained BERT: review reading comprehension (RRC), aspect extraction (AE) and aspect sentiment classification (ASC).
+The details of these 3 tasks are intoduced in \ref{chap6:nlp}.
+Here we only discuss the formulation of these 3 tasks under the setting of BERT.
+The overall illustrations of the formulation are depicted in \ref{chap6:fig:overview}.
+
+\begin{figure}
+\centering
+\includegraphics[width=5.5in]{fig/naacl19_overview.png}
+    \caption{BERT for end tasks}
+\label{chap6:fig:overview}
+\vspace{-3mm}
+\end{figure}
+
+Following the success of SQuAD \cite{rajpurkar2016squad} and BERT's SQuAD implementation, we design review reading comprehension as follows.
+Given a question $q=(q_1, \dots, q_m)$ asking for an answer from a review $d=(d_1, \dots, d_n)$, we formulate the input as a sequence $x=(\texttt{[CLS]}, q_1, \dots, q_m, \texttt{[SEP]}, d_1, \\ \dots, d_n, \texttt{[SEP]})$, where \texttt{[CLS]} is a dummy token not used for RRC and \texttt{[SEP]} is intended to separate $q$ and $d$.
+Let $\text{BERT}(\cdot)$ be the pre-trained (or post-trained as in the next section) BERT model. We first obtain the hidden representation as $h=\text{BERT}(x) \in \mathbb{R}^{r_h*|x|}$, where $|x|$ is the length of the input sequence and $r_h$ is the size of the hidden dimension. Then the hidden representation is passed to two separate dense layers followed by softmax functions: $l_1=\text{softmax}(W_1 \cdot h + b_1)$ and $l_2=\text{softmax}(W_2 \cdot h + b_2)$, where $W_1$, $W_2 \in \mathbb{R}^{r_h}$ and $b_1, b_2 \in \mathbb{R}$. The \text{softmax} is applied along the dimension of the sequence.
+The output is a span across the positions in $d$ (after the \texttt{[SEP]} token of the input), indicated by two pointers (indexes) $s$ and $e$ computed from $l_1$ and $l_2$: $s=\argmax_{ \text{Idx}_{\texttt{[SEP]}} < s<|x|}(l_1)$ and $e=\argmax_{s\le e<|x|}(l_2)$, where $\text{Idx}_{\texttt{[SEP]}}$ is the position of token \texttt{[SEP]} (so the pointers will never point to tokens from the question).
+As such, the final answer will always be a valid text span from the review as $a=(d_s, \dots, d_e)$.
+
+Training the RRC model involves minimizing the loss that is designed as the averaged cross entropy on the two pointers: $$\mathcal{L}_{\text{RRC}}=-\frac{\sum \log l_1 \mathbb{I}(s)+ \sum \log l_2 \mathbb{I}(e)}{2},$$ where $\mathbb{I}(s)$ and $\mathbb{I}(e)$ are one-hot vectors representing the ground truths of pointers.
+
+As a core task in ABSA, aspect extraction (AE) aims to find aspects that reviewers have expressed opinions on \cite{hu2004mining}. 
+In supervised settings, it is typically modeled as a sequence labeling task, where each token from a sentence is labeled as one of $\{\textit{\underline{B}egin}, \textit{\underline{I}nside}, \textit{\underline{O}utside}\}$. A continuous chunk of tokens that are labeled as one \textit{B} and followed by zero or more \textit{I}s forms an aspect.
+The input sentence with $m$ words is constructed as $x=(\texttt{[CLS]}, x_1, \dots, x_m, \texttt{[SEP]})$.
+After $h=\text{BERT}(x)$, we apply a dense layer and a softmax for each position of the sequence: $l_3=\text{softmax}(W_3 \cdot h + b_3)$, where $W_3 \in \mathbb{R}^{3*r_h}$ and $b_3 \in \mathbb{R}^3$ (3 is the total number of labels (\textit{BIO})).  Softmax is applied along the dimension of labels for each position and $l_3 \in [0, 1]^{3*|x|}$. The labels are predicted as taking argmax function at each position of $l_3$ and the loss function is the averaged cross entropy across all positions of a sequence.
+
+As a subsequent task of AE, aspect sentiment classification (ASC) aims to classify the sentiment polarity (positive, negative, or neutral) expressed on an aspect extracted from a review sentence.
+There are two inputs to ASC: an aspect and a review sentence mentioning that aspect.
+
+Let $x=(\texttt{[CLS]}, q_1, \dots, q_m, \texttt{[SEP]}, d_1, \dots, d_n, \texttt{[SEP]})$, where $q_1, \dots, q_m$ now is an aspect (with $m$ tokens) and $d_1, \dots, d_n$ is a review sentence containing that aspect.
+After $h=\text{BERT}(x)$, we leverage the representations of \texttt{[CLS]} $h_{\text{[CLS]}}$, which is the aspect-aware representation of the whole input.
+The distribution of polarity is predicted as $l_4=\text{softmax}(W_4 \cdot h_{\text{[CLS]}} + b_4)$, where $W_4 \in \mathbb{R}^{3*r_h}$ and $b_4 \in \mathbb{R}^3$ (3 is the number of polarities). Softmax is applied along the dimension of labels on \texttt{[CLS]}: $l_4 \in [0, 1]^{3}$.
+Training loss is the cross-entropy on the polarities.
+
+As a summary of these tasks, insufficient supervised training data significantly limits the performance gain across these 3 review-based tasks.~Although BERT's pre-trained weights strongly boost the performance of many other NLP tasks on formal texts, we observe in Chapter \ref{chap6:sec:exp} that BERT's weights only result in a limited gain or worse performance compared with existing baselines.
+
+\textbf{Post-training datasets}
+
 For domain knowledge post-training, we use Amazon laptop reviews \cite{HeMcA16a} and Yelp Dataset Challenge reviews (\url{https://www.yelp.com/dataset/challenge}).
 For laptop domain, we filtered out reviewed products that have appeared in the validation/test reviews to avoid training bias for test data (Yelp reviews do not have this issue as the source reviews of SemEval are not from Yelp). 
 Since the number of reviews is small, we choose a duplicate factor of 5 (each review generates about 5 training examples) during BERT data pre-processing.
@@ -559,9 +607,7 @@ We choose 700K reviews to ensure it is large enough to generate training example
 This gives us 2,677,025 post-training examples for restaurant domain knowledge learning.
 
 For general RC knowledge, we leverage SQuAD 1.1 \cite{rajpurkar2016squad} that comes with 87,599 training examples from 442 Wikipedia articles.
-
-To evaluate the performance of the post-trained model, I conducted 3 tasks on reviews with two on aspect-based sentiment analysis and one on review reading comprehension.
-The experiments are discussed in \ref{chap6:nlp} when addressing each specific task.
+The experiments are discussed in Chapter \ref{chap6:nlp} when addressing each specific task.
 
 \subsection{-- Pre-tuning for End-tasks}
 \label{chap4:sec:pre-tuning}
@@ -578,14 +624,14 @@ This difference yields an even larger discrepancy that a limited training data f
 In my research on pre-tuning, I give a task called review conversational reading comprehension (RCRC), which needs to carry multiple past turns of question answering as input to the model that does not appear in the pre-training stage of BERT.
 We define the textual format of RCRC in the following way and form a pre-tuning task to improve the supervised learning from limited end task data.
 
-\textbf{Textual Format}\\
+\textbf{Textual Format}
 \label{chap4:sec:format}
+
 Inspired by the DrQA system \cite{reddy2018coqa}, we formulate an input example $x$ for both RCRC fine-tuning and pre-tuning (We share the same notation for both tasks for brevity.) as a composition of the context $C$, the current question $q_k$, and a review $d$:
 \vspace*{-2mm}
 \begin{equation}
 \begin{split}
-(\texttt{[CLS]} \texttt{[Q]} q_1 \texttt{[A]} a_1 \dots \texttt{[Q]} q_{k-1} \texttt{[A]} a_{k-1} \\
-\texttt{[Q]} q_{k} \texttt{[SEP]} d_{1:n} \texttt{[SEP]}),
+(\texttt{[CLS]} \texttt{[Q]} q_1 \texttt{[A]} a_1 \dots \texttt{[Q]} q_{k-1} \texttt{[A]} a_{k-1} \texttt{[Q]} q_{k} \texttt{[SEP]} d_{1:n} \texttt{[SEP]}),
 \nonumber
 \end{split}
 \vspace*{-5mm}
@@ -598,18 +644,16 @@ We propose a pre-tuning stage that can enhance the understanding of the input/ou
 \label{chap4:sec:form}
 
 We first formulate the data for pre-tuning that aims to address the understanding of the textual format.
-As we have no annotated data except the limited $(\text{RC})_2$ data, we harvest domain QA pairs and reviews (that are largely available online, see Section 
-%\ref{chap4:sec:exp}
-), which are typically organized under an entity (a laptop or a restaurant). The QA pairs and reviews are combined to produce the pre-tuning examples. The process is given in Algorithm \ref{chap4:alg:pre-tuning}.
+As we have no annotated data except the limited $(\text{RC})_2$ data, we harvest domain QA pairs and reviews, which are typically organized under an entity (a laptop or a restaurant). The QA pairs and reviews are combined to produce the pre-tuning examples. The process is given in Algorithm \ref{chap4:alg:pre-tuning}.
 
-\begin{algorithm}[H]
+\begin{algorithm}[t]
     \label{chap4:alg:pre-tuning}
     \LinesNumbered
     \DontPrintSemicolon
     \caption{Data Generation Algorithm}
     \SetKwInOut{Input}{Input} 
     \SetKwInOut{Output}{Output} 
-    \Input{$\mathcal{Q}$: a set of QA pairs;\\$\mathcal{R}$: a set of reviews;\\$h_{max}$: maximum turns in context.}
+    \Input{$\mathcal{Q}$: a set of QA pairs; $\mathcal{R}$: a set of reviews; $h_{max}$: maximum turns in context.}
     \Output{$\mathcal{T}$: pre-tuning data.}
 
     \BlankLine
@@ -642,7 +686,7 @@ As we have no annotated data except the limited $(\text{RC})_2$ data, we harvest
 \end{algorithm}
 
 The inputs to Algorithm \ref{chap4:alg:pre-tuning} are a set of QA pairs and a set of reviews belonging to the same entity and the maximum number of turns in the context. The output is the pre-tuning data, which is initialized in Line 1. 
-Each example is denoted as $(x, (u, v))$, where $x$ is the input example and $(u, v)$ indicates the boundary (starting and ending indexes) of an answer for the auxiliary objective (discussed in Section \ref{chap4:sec:aux}).
+Each example is denoted as $(x, (u, v))$, where $x$ is the input example and $(u, v)$ indicates the boundary (starting and ending indexes) of an answer for the auxiliary objective (discussed in the next section).
 Given a QA pair $(q', a')$ in Line 2, we first build the left side of input example $x$ in Line 3-9.
 After initializing input $x$ in Line 3, we randomly determine the number of turns in the context in Line 4 and concatenate $\oplus$ these turns of QA pairs in Line 5-8, where $\mathcal{Q}\backslash(q', a')$ ensures the current QA pair $(q', a')$ is not chosen.
 In Line 9, we concatenate with the current question $q'$.
@@ -656,8 +700,9 @@ Otherwise, BERT should detect no $a'$ on the right side and point to \texttt{[CL
 Algorithm \ref{chap4:alg:pre-tuning} is run $k$ times to allow for enough samplings. 
 Following BERT, we still randomly mask some words in each example $x$ but omitted here for brevity.
 
-\textbf{Auxilary Objective}\\
+\textbf{Auxilary Objective}
 \label{chap4:sec:aux}
+
 Besides the input, we further adapt BERT to the output of RCRC with an auxiliary objective.
 The design of this auxiliary objective is to mimic a prediction of a textual span in RCRC, which aims to predict the token spans of an answer randomly inserted in the review or \textit{NO ANSWER} if a randomly drawn negative answer appears.
 The implementation of both the auxiliary objective and the RCRC model is similar to BERT for SQuAD 2.0 \cite{rajpurkar2018know}, so we omit them for brevity.
@@ -668,7 +713,8 @@ The results of RCRC is discussed in \ref{chap6:sec:rcrc}.
 \chapter{Lifelong Graph Representation Learning}
 \label{chap5:graph}
 
-Besides classification and word representations that aims to turn unstructured text into a structured form, the knowledge graph is also important data that aims to provide support for reasoning and structured interpretation.
+Besides classification and word representations that aims to turn unstructured text into a structured form, knowledge graph is an important form of structured data that possess human knowledge.
+Different from unstructured text, knowledge graph is more interpretable and maintainable by human.
 Given the discrete nature of the knowledge graph, it enables the dynamic accumulation of structured knowledge for future use, which is the goal of lifelong learning.
 In this setting, one task in lifelong learning can contribute to the updates of a knowledge graph and the future task can leverage the updated knowledge graph for better reasoning or prediction.
 Thus, I target a lifelong graph representation learning task, where the model should learn representations for the changes of knowledge graph for better reasoning or prediction.
@@ -690,34 +736,38 @@ One important application regarding this kind of knowledge is a recommendation, 
 Typically these models aim to learn users and items profile, such as using matrix factorization based on click-through data.
 Unfortunately, existing recommendation models aim to learn static user and item profiles.
 These static profiles cannot capture the changes in users' needs.
-As such, conversational recommendation \cite{li2018towards,kang2019recommendation} is a novel type of task that allows using an interactive dialogue to collect users' up-to-date preference to update the user profile.
+As such, conversational recommendation \cite{li2018towards,kang2019recommendation} is a novel type of task that allows using an interactive dialog to collect users' up-to-date preference to update the user profile.
 Although existing research in conversational recommendation aims to update the user profile in the hidden space, modeling users' profile as a knowledge graph has the following two (2) benefits: (1) it allows for easier updates and maintenance of user profile for long-term use given the semantics of the hidden space is mostly undefined and determined by random initialization; (2) it allows for interpretability given the discrete structure of knowledge graph.
 
-To this end, a user's profile can be ideally represented as a knowledge graph, which requires frequent updates, even in one turn of a dialogue between the AI agent and a user.
+To this end, a user's profile can be ideally represented as a knowledge graph, which requires frequent updates, even in one turn of a dialog between the AI agent and a user.
 More importantly, I aim to design a universal knowledge graph that contains almost all knowledge in a recommendation setting, including information from both the users and items.
-As such, this chapter focuses on designing and maintaining a knowledge graph for recommendation under a conversation setting, where the representation of the knowledge graph needs to be updated frequently for reasoning a better dialogue policy.
+As such, this chapter focuses on designing and maintaining a knowledge graph for recommendation under a conversation setting, where the representation of the knowledge graph needs to be updated frequently for reasoning a better dialog policy.
 
 \section{Lifelong Knowledge Graph Reasoning}
 \label{chap5:sec:reason}
 
-As an example of lifelong representation learning over a dynamic knowledge graph, we propose the following task:
+As an example of lifelong representation learning over a dynamic knowledge graph, we demonstrate the usage of dynamic knowledge graph reasoning with an application in dialog system. 
+This task is called conversational recommendation. 
+Conversational recommendation is a combination of dialog system and recommender system and aims to collect a user's up-to-date knowledge for recommendation. 
+We focus on the graph maintanance aspect of conversational recommendation in this chapter and  detail the application side of this task in Chapter \ref{chap6:sec:mgcr}.
+We call the knowledge graph about a user memory because it is the agent's memory about a user.
  
-\noindent\textbf{Memory-grounded Conversational Recommendation\footnote{We omit details of graph construction here for brevity and describe details in Section \ref{chap5:sec:graph}.}}:
+\textbf{Memory-grounded Conversational Recommendation}:
 Given the history of previous items $\mathcal{H}$ (interacted or visited, etc.), candidate items $\mathcal{C}$ for recommendation, and their attributes (values), 
 an agent first (1) constructs a user memory graph $\mathcal{G} = \{(e, r, e')\vert e, e' \in \mathcal{E}, r \in \mathcal{R} \}$ for user $e_u$; 
-then (2) for each turn $d \in D$ of a dialogue, the agent updates $\mathcal{G}$ with tuples of preference $\mathcal{G}' \gets \mathcal{G} \cup \{(e_u, r_1, e_1), \dots\}$ ;
-(3) performs reasoning over $\mathcal{G}'$ to yield a dialogue policy $\pi$ that
+then (2) for each turn $d \in D$ of a dialog, the agent updates $\mathcal{G}$ with tuples of preference $\mathcal{G}' \gets \mathcal{G} \cup \{(e_u, r_1, e_1), \dots\}$ ;
+(3) performs reasoning over $\mathcal{G}'$ to yield a dialog policy $\pi$ that
 either (i) performs more rounds of interaction by asking for more preference, 
 or (ii) predicts optimal (or ground truth) items for recommendations $\mathcal{T} \subset \mathcal{C}$.
 
 \textbf{Graph Formulation}
 \label{chap5:sec:graph}
 
-In this section, we describe the formulation of a user memory graph based on each scenario of dialogue (the formulation of a scenario in conversational recommendation can be found in \ref{chap6:sec:umgr}).
-There are many design choices of constructing a user memory graph and our goal is to model the graph with easy extensibility, maintenance and interpretability for the generation of dialogue policy $\pi$ through the course of a conversation.
+In this section, we describe the formulation of a user memory graph based on each scenario of dialog (the formulation of a scenario in conversational recommendation can be found in Chapter \ref{chap6:sec:mgcr}).
+There are many design choices of constructing a user memory graph and our goal is to model the graph with easy extensibility, maintenance and interpretability for the generation of dialog policy $\pi$ through the course of a conversation.
 As a reminder, a user memory graph is denoted as $\mathcal{G} = \{(e, r, e')\vert e, e' \in \mathcal{E}, r \in \mathcal{R} \}$, which is essentially a heterogeneous graph with typed (or meta) entities and relations. 
 
-\begin{table}[H]
+\begin{table}
     \centering
     \scalebox{0.8}{
         \begin{tabular}{c|l}
@@ -727,7 +777,7 @@ As a reminder, a user memory graph is denoted as $\mathcal{G} = \{(e, r, e')\ver
         $\mathcal{U}$ & user entities \\
         $\mathcal{M}$ & memory entities\\
         $\mathcal{I}$ & item entities: $\mathcal{C} \cup \mathcal{H}$\\
-        $\mathcal{S}$ & slot entities defined in Table \ref{chap6:tbl:dialog_slot}\\
+        $\mathcal{S}$ & slot entities defined in \ref{chap6:tbl:dialog_slot}\\
         $\mathcal{V}$ & value entities \\
         \hline
         \textbf{Relation Types} &   \\
@@ -749,51 +799,49 @@ As a reminder, a user memory graph is denoted as $\mathcal{G} = \{(e, r, e')\ver
 \label{chap5:tbl:meta_entity_edges}
 \end{table}
 
-We first define the entity sets and relations in Table \ref{chap5:tbl:meta_entity_edges}.
-To illustrate the construction of a user memory graph and its maintenance, we describe an example in Figure \ref{chap5:fig:graph}.
+We first define the entity sets and relations in \ref{chap5:tbl:meta_entity_edges}.
+To illustrate the construction of a user memory graph and its maintenance, we describe an example in \ref{chap5:fig:graph}.
 Consider a user Bob $e_\text{Bob}$, which has a memory $(e_\text{Bob}, r_{\text{has\_mem}}, e_m)$ (not shown in the figure).
 This memory entity has a $(e_m, r_{\text{visited}}, e_\text{Seas})$ relation to item $e_\text{Seas}$ (a restaurant).
 $e_\text{Seas}$ has values $(e_\text{Seas}, r_{\text{has\_aspect}}, e_\text{affordable})$ and $(e_\text{Seas}, r_{\text{has\_aspect}}, e_\text{Japanese})$.
 Those two values belong to slots $s_\text{price}$ and $s_\text{category}$, respectively.
 The values $e_\text{affordable}$ and $e_\text{Japanese}$ are also shared by items $e_\text{Yayoi}$ and $e_\text{Basil}$, respectively.
-As a result, we can see this user memory graph is highly extendable as new relations or entities can be easily integrated as more experience or preference come from the user. This can be further illustrated in Figure \ref{chap5:fig:cum}, where we add relations about users' sentiment over 3 rounds of interactions.
+As a result, we can see this user memory graph is highly extendable as new relations or entities can be easily integrated as more experience or preference come from the user. This can be further illustrated in \ref{chap5:fig:cum}, where we add relations about users' sentiment over 3 rounds of interactions.
 When it comes to the final recommended item $e_{\text{Basil}}$, we can provide explanations that the user is positive on $e_\text{affordable}$ and $e_\text{Japanese}$, leading to the recommendation $e_\text{Basil}$ (as in paths $(e_\text{Bob} \rightarrow r_\text{pos\_on} \rightarrow e_\text{affordable}$ $\rightarrow r_\text{has\_aspect} \rightarrow$ $e_\text{Basil})$ and $(e_\text{Bob} \rightarrow r_\text{pos\_on} \rightarrow e_\text{Japanese} \rightarrow r_\text{has\_aspect} $ $\rightarrow e_\text{Basil})$, respectively). Further, another important explanation is the path $(e_\text{Bob} \rightarrow r_\text{visited} \rightarrow e_\text{Seas}$ $\rightarrow r_\text{has\_aspect} \rightarrow e_\text{affordable}$ $\rightarrow r_\text{has\_aspect} \rightarrow e_\text{Basil})$ which draws the relevance from a visited item to the current recommendation. 
 
-As such, another benefit of formulating such a user memory graph is that all items, slots, values of a generated dialogue policy $\pi$ can be directly mapped to certain (item, slot or value) entities in the user memory graph.
-This paves the way for reasoning over the user memory graph for explainable dialogue policy generation (Section \ref{chap5:sec:umgr}). 
+As such, another benefit of formulating such a user memory graph is that all items, slots, values of a generated dialog policy $\pi$ can be directly mapped to certain (item, slot or value) entities in the user memory graph.
+This paves the way for reasoning over the user memory graph for explainable dialog policy generation (Chapter \ref{chap5:sec:umgr}). 
 
-\begin{figure}[H]
+\begin{figure}
 \centering
-\includegraphics[width=2.2in]{fig/acl19_graph.png}
-    %\caption{\textbf{Construction of user memory graph}. We omit the memory entity for brevity. In reality, each $r_\text{visited}$ relation has an internal memory entity because a user may have different experiences on the same item at different times.}
-    \caption{Construction of user memory graph}
+\includegraphics[width=5.5in]{fig/acl19_graph.png}
+\caption{Construction of user memory graph}
 \label{chap5:fig:graph}
 \vspace{-15pt}
 \end{figure}
 
-\begin{figure*}[H]
+\begin{figure}
 \centering    
-\includegraphics[width=8.0in]{fig/acl19_cum.png}
-    %\caption{Overview of user memory graph and its accumulation over 3 rounds in a dialogue.}
-    \caption{Accumulation of memory graph}
+\includegraphics[width=6.0in]{fig/acl19_cum.png}
+\caption{Dynamic updates of memory graph}
 \label{chap5:fig:cum}
 \vspace{-3mm}
-\end{figure*}
+\end{figure}
 
 \section{Graph Reasoner}
 \label{chap5:sec:umgr}
 
-We propose a model called User Memory Graph Reasoner (UMGR) to reason the turn-level dialogue policy over the user memory graph.\\ 
-\textbf{Input}: the input of UMGR is the past dialogue acts up to the current turn from the user $\boldsymbol{a}$, the updated user memory graph $\mathcal{G}'$, which contains all the knowledge about the items their associated values and slots, and visited items. We further accumulate all updates from the user (e.g., via the assumed results from NLU or state tracking) in the form of last 3 types of relations in Table 4 (Similar to visited items, we add a new memory entity for the current dialogue and then associate all the new relations to that memory entity.).\\
-\textbf{Output}: UMGR's output is the dialogue policy $\pi=(\hat{y}^\mathcal{A}, \hat{y}^\mathcal{C}, \hat{y}^\mathcal{S}, \hat{y}^\mathcal{V})$ for the current turn, where $\mathcal{A}$, $\mathcal{C}$, $\mathcal{S}$, $\mathcal{V}$ indicate the space of dialogue acts, candidate items, slots and values, respectively.
+We propose a model called User Memory Graph Reasoner (UMGR) to reason the turn-level dialog policy over the user memory graph.\\ 
+\textbf{Input}: the input of UMGR is the past dialog acts up to the current turn from the user $\boldsymbol{a}$, the updated user memory graph $\mathcal{G}'$, which contains all the knowledge about the items their associated values and slots, and visited items. We further accumulate all updates from the user (e.g., via the assumed results from NLU or state tracking) in the form of last 3 types of relations in Table 4 (Similar to visited items, we add a new memory entity for the current dialog and then associate all the new relations to that memory entity.).\\
+\textbf{Output}: UMGR's output is the dialog policy $\pi=(\hat{y}^\mathcal{A}, \hat{y}^\mathcal{C}, \hat{y}^\mathcal{S}, \hat{y}^\mathcal{V})$ for the current turn, where $\mathcal{A}$, $\mathcal{C}$, $\mathcal{S}$, $\mathcal{V}$ indicate the space of dialog acts, candidate items, slots and values, respectively.
 The predictions from $\hat{y}^\mathcal{C}, \hat{y}^\mathcal{S}$ and $\hat{y}^\mathcal{V}$ essentially provides a ranking over those entity sets.
 For example, when $\hat{y}^\mathcal{A}=$ \textit{Recommendation}, the top-1 entity $\argmax_{e_i \in \mathcal{C}}(\hat{y}^\mathcal{C})$ will be provided to the user.
 Similarly, $\hat{y}^\mathcal{A}=$ \textit{Open Question} is related to the top-1 slot $\argmax_{e_s \in \mathcal{S}}(\hat{y}^\mathcal{S})$ and $\hat{y}^\mathcal{A}=$ \textit{Yes/no Question} is related to the top-1 value $\argmax_{e_v \in \mathcal{V}}(\hat{y}^\mathcal{V})$.
-In this way, all arguments of a dialogue act can be mapped to certain entities in the user memory graph for a structured explanation instead of decoding from latent space.
+In this way, all arguments of a dialog act can be mapped to certain entities in the user memory graph for a structured explanation instead of decoding from latent space.
 
 To enable the reasoning over a user memory graph on-the-fly, we incorporate a Relational Graph Convolutional Networks (R-GCN) \cite{schlichtkrull2018modeling} inside UMGR.
 R-GCN is a GCN \cite{kipf2016semi} with typed relations, where each relation is associated with their weights to enable reasoning over a heterogeneous graph.
-UMGR first encodes past dialogue acts $\boldsymbol{a}$ and entities $e \in \mathcal{E}$ into hidden dimensions.
+UMGR first encodes past dialog acts $\boldsymbol{a}$ and entities $e \in \mathcal{E}$ into hidden dimensions.
 %\vspace{-4mm}
 \begin{equation}
 \begin{split}
@@ -801,7 +849,7 @@ h_a = \text{LSTM}(W^\mathcal{A}(\boldsymbol{a})), \\
 h_j^{(0)} = W^\mathcal{E}(e_j),
 \end{split}
 \end{equation}
-where $W^\mathcal{A}$ and $W^\mathcal{E}$ are embedding layers and the past dialogue acts are further encoded by an LSTM encoder.
+where $W^\mathcal{A}$ and $W^\mathcal{E}$ are embedding layers and the past dialog acts are further encoded by an LSTM encoder.
 We further allow on-the-fly reasoning over (new) items by sharing the embedding weights for different items (as a special entity \texttt{<ITEM>}) in $W^\mathcal{E}$. 
 Then each entity in the user memory graph is encoded by multiple layers of R-GCN.
 \begin{equation}
@@ -819,14 +867,14 @@ h^{\text{ag}} = \frac{1}{\vert \mathcal{C} \cup \mathcal{S} \cup \mathcal{V} \ve
 \end{split}
 \end{equation}
 where $W^{\text{ag}}$ and $b^{\text{ag}}$ are weights for aggregation layer.
-The purpose of having an aggregation layer is to leverage the information in the user memory graph for predicting the dialogue acts, which is a classification problem. The loss for dialogue acts is defined as
+The purpose of having an aggregation layer is to leverage the information in the user memory graph for predicting the dialog acts, which is a classification problem. The loss for dialog acts is defined as
 \begin{equation}
 \begin{split}
 \hat{y}^{\mathcal{A}} = \text{Softmax}(W^\mathcal{A} (h_a \oplus h^\text{ag}) +b^\mathcal{A} ), \\
 \mathcal{L}^{\mathcal{A}} = \text{CrossEntropyLoss}(\hat{y}^\mathcal{A}, y^\mathcal{A}),
 \end{split}
 \end{equation}
-where $\oplus$ is the concatenation operation and $y^\mathcal{A}$ is the annotated dialogue act.
+where $\oplus$ is the concatenation operation and $y^\mathcal{A}$ is the annotated dialog act.
 Further, all item, slot and value entities are trained by log loss for ranking. For example, the loss for candidate items $\mathcal{C}$ is defined as 
 \begin{equation}
 \begin{split}
@@ -835,12 +883,13 @@ Further, all item, slot and value entities are trained by log loss for ranking. 
 \end{split}
 \end{equation}
 Similarly, we obtain loses $\mathcal{L}_\mathcal{S}$, $\mathcal{L}_\mathcal{V}$ for slot entities $\mathcal{S}$ and value entities $\mathcal{V}$, respectively.
-Finally, the total loss is the sum over all losses for dialogue acts, items, slots and values: 
+Finally, the total loss is the sum over all losses for dialog acts, items, slots and values: 
 \begin{equation}
 \begin{split}
 \mathcal{L} = \mathcal{L}^\mathcal{A} + \alpha\mathcal{L}^\mathcal{C} + \beta\mathcal{L}^\mathcal{S} + \gamma \mathcal{L}^\mathcal{V},
 \end{split}
 \end{equation}
 where $\alpha, \beta$ and $\gamma$ are hyper-parameters to align losses of different scales.
-Note that during training and prediction, all invalid dialogue acts (e.g., user dialogue acts) and entities (e.g., not appear in a user memory graph) are masked out.
-As we can see, unlike traditional recommender systems, UMGR does not learn (or ``overfit to'') any prior knowledge about users into the weights. Instead, it reasons the dialogue policy on-the-fly in each turn based on the updated user memory graph.
+Note that during training and prediction, all invalid dialog acts (e.g., user dialog acts) and entities (e.g., not appear in a user memory graph) are masked out.
+As we can see, unlike traditional recommender systems, UMGR does not learn (or ``overfit to'') any prior knowledge about users into the weights. Instead, it reasons the dialog policy on-the-fly in each turn based on the updated user memory graph.
+We will detail the task of conversational recommendation and experiments in the next chapter.

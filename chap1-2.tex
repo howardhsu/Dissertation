@@ -91,12 +91,12 @@ Then focus on lifelong graph reasoning for conversational recommendation with dy
 \label{chap2:open}
 
 Classification is a well-known and classic problem and the deep learning variant of the classification task typically leverages an activation function that can compute a categorical distribution over a set of classes (e.g., the softmax function).
-I call this type of classification under the \textit{closed-world assumption} because the classes seen in testing must have appeared in training. However, this assumption is often violated in real-world applications. For example, on a social media site, new topics emerge constantly and in e-commerce, new categories of products appear daily. 
+This type of classification is called \textit{closed-world classification} because the classes seen in testing must have appeared in training. However, this assumption is often violated in real-world applications. For example, new topics often emerge on a social media site and new categories of products appear daily on e-commerce website. 
 A model that cannot detect new/unseen topics or products is hard to function well in such open environments.  
 This is where lifelong learning can be applied to the existing classification problem.
 
 \section{Motivation}
-An AI agent working in the real world must be able to recognize the classes of things that it has seen/learned before and detect new things that it has not seen and learn to accommodate the new things. This learning paradigm is called \textit{\underline{o}pen-\underline{w}orld \underline{l}earning} (OWL)
+Generally speaking, an AI agent working in the real world must be able to recognize the classes of things that it has seen/learned before and detect new things that it has not seen and learn to accommodate the new things. This learning paradigm is called \textit{\underline{o}pen-\underline{w}orld \underline{l}earning} (OWL)
 \cite{chen2018lifelong,bendale2015towards,fei2016learning}. 
 This is in contrast with the classic supervised learning paradigm which makes the \textit{closed-world assumption} that the classes seen in testing must have appeared in training. With the ever-changing Web, the popularity of AI agents such as intelligent assistants and self-driving cars that need to face the real-world open environment with unknowns, OWL capability is crucial.
 
@@ -111,14 +111,15 @@ But, with the support to allow the 3rd-party to develop new skills (Apps), such 
 \section{Open-world Learning}
 Most existing solutions to OWL are built on top of closed-world models \cite{bendale2015towards,bendale2016towards,fei2016learning,shu-xu-liu:2017:EMNLP2017}, e.g., by setting thresholds on the logits (before the softmax/sigmoid functions) to reject unseen classes which tend to mix with existing seen classes. One major weakness of these models is that they cannot easily add new/unseen classes to the existing model without re-training or incremental training (e.g., OSDN \cite{bendale2016towards} and DOC \cite{shu-xu-liu:2017:EMNLP2017}).
 There are incremental learning techniques (e.g., iCaRL \cite{rebuffi2017icarl} and DEN \cite{lee2017lifelong}) that can incrementally learn to classify new classes. However, they miss the capability of rejecting examples from unseen classes.
-This paper proposes to solve OWL with both capabilities in a very different way via meta-learning.
+This section proposes to solve OWL with both capabilities in a very different way via meta-learning.
 
 \textbf{Problem Statement}: At any point in time, the learning system is aware of a set of seen classes $S=\{c_1, \dots, c_m\}$
 and has an OWL model/classifier for $S$ but is unaware of a set of unseen classes $U=\{c_{m+1}, \dots\}$ (any class not in $S$ can be in $U$) that the model may encounter. The goal of an OWL model is two-fold: (1) classifying examples from classes in $S$ and reject examples from classes in $U$, and (2) when a new class $c_{m+1}$ (without loss of generality) is removed from $U$ (now $U=\{c_{m+2}, \dots\}$) and added to $S$ (now $S=\{c_1, \dots, c_m, c_{m+1}\}$, still being able to perform (1) without re-training the model.
 
 %\section{Related Work}
-\textbf{Related Work}\\
+\textbf{Related Work}
 \label{chap2:sec:rel}
+
 Open-world learning has been studied in text mining and computer vision (where it is called open-set recognition) \cite{bendale2015towards,chen2018lifelong,fei2016learning}. Most existing approaches focus on building a classifier that can predict examples from unseen classes into a (hidden) \textit{rejection class}.
 These solutions are built on top of closed-world classification models \cite{bendale2015towards,bendale2016towards,shu-xu-liu:2017:EMNLP2017}. Since a closed-world classifier cannot detect/reject examples from unseen classes (they will be classified into some seen classes), some thresholds are used so that these closed-world models can also be used to do rejection. However, as discussed earlier, when incrementally learning new classes, they also need some form of re-training, either full re-training from scratch \cite{bendale2016towards,shu-xu-liu:2017:EMNLP2017} or partial re-training in an incremental manner \cite{bendale2015towards,fei2016learning}. 
 
@@ -147,7 +148,7 @@ the parameters of the meta-classifier are not trained on the set of seen classes
 We can see that the proposed method works like the nearest neighbor classifier (e.g., $k$NN). However, the key difference is that we train a meta-classifier to perform both classification and rejection based on a learned metric and a learned voting mechanism. Also, 
 $k$NN cannot do rejection on unseen classes. 
 
-As an overview, Fig. \ref{chap2:fig:overview} depicts how L2AC classifies a test example into an existing seen class or rejects it as from an unseen class. The training process for the meta-classifier is not shown, which is detailed in Sec. \ref{chap2:sec:train}. 
+As an overview, \ref{chap2:fig:overview} depicts how L2AC classifies a test example into an existing seen class or rejects it as from an unseen class. The training process for the meta-classifier is not shown, which is detailed in Chapter \ref{chap2:sec:train}. 
 The L2AC framework has two major components: a ranker and a meta-classifier. 
 The ranker is used to retrieve some examples from a seen class that are similar/near to the test example. The meta-classifier performs classification after it reads the retrieved examples from the seen classes. The two components work together as follows.
 
@@ -164,30 +165,32 @@ Such a lazy learning mechanism allows the dynamic maintenance of a set of seen c
 However, the key differences are that all the metric space, voting and rejection are learned by the meta-classifier.
 
 Retrieving the top-$k$ nearest examples $x_{a_{1:k} }$ for a given test example $x_t$ needs a ranking model (the ranker).
-We will detail a sample implementation of the ranker in Sec. \ref{chap2:sec:exp} 
+We will detail a sample implementation of the ranker in Chapter \ref{chap2:sec:exp} 
 and discuss the details of the meta-classifier in the next section.
 
 \begin{figure*}
 \centering    
-\includegraphics[width=5.5in]{fig/www19_overview.png}
+\includegraphics[width=5.7in]{fig/www19_overview.png}
 %\caption{Overview of the L2AC framework (best viewed in colors). Assume the seen class set $S$ has 5 classes and their examples are indicated by 5 different colors. L2AC has two components: a ranker and a meta-classifier. Given a (green) testing example from a seen class, the ranker first retrieves the top-$k$ nearest examples (memory indexes) from each seen class. Then the meta-classifier takes both the test example and the top-$k$ nearest examples for a seen class to produce a probability score for that class. The meta-classifier is applied 5 times (indicated by 5 rounded rectangles) over these 5 seen classes and yields 5 probability scores, where the 3rd (green) class attends the maximum score as the final class (green) prediction. However, if the test example (grey) is from an unseen class (as indicated by the dashed box), none of those probability scores from the seen classes will predict positive, which leads rejection.}
 \caption{Overview of the L2AC framework}
 \label{chap2:fig:overview}
 \end{figure*}
 
 %\subsection{Meta-Classifier}
-\textbf{Meta-Classifier}\\
+\textbf{Meta-Classifier}
+
 Meta-classifier serves as the core component of the L2AC framework. It is essentially a binary classifier on a given seen class. It takes the top-$k$ nearest examples (to the test example $x_t$) of the seen class as the input and determines whether $x_t$ belongs to that seen class or not.
-In this section, we first describe how to represent examples of a seen class. Then we describe how the meta-classifier processes these examples together with the test example into an overall probability score (via a voting mechanism) for deciding whether the test example should belong to any seen class (classification) or not (rejection). Along with that we also describe how a joint decision is made for open-world classification over a set of seen classes. Finally, we describe how to train the meta-classifier via another set of meta-training classes and their examples.
+In this part, we first describe how to represent examples of a seen class. Then we describe how the meta-classifier processes these examples together with the test example into an overall probability score (via a voting mechanism) for deciding whether the test example should belong to any seen class (classification) or not (rejection). Along with that we also describe how a joint decision is made for open-world classification over a set of seen classes. Finally, we describe how to train the meta-classifier via another set of meta-training classes and their examples.
 
 %\subsubsection{Example Representation and Memory}
-\textbf{Example Representation and Memory}\\
+\textbf{Example Representation and Memory}
 \label{chap2:sec:mem}
+
 Representation learning lives at the heart of neural networks. 
 Following the success of using pre-trained weights from large-scale image datasets (such as ImageNet \cite{russakovsky2015imagenet}) as feature encoders, we assume there is an encoder that captures almost all features for text classification.
 
 Given an example $x$ representing a text document (a sequence of tokens), we obtain its continuous representation (a vector) via an encoder $h=g(x)$, where the encoder $g(\cdot)$ is typically a neural network (e.g., CNN or LSTM).
-We will detail a simple encoder implementation in Sec. \ref{chap2:sec:exp}.
+We will detail a simple encoder implementation in Chapter \ref{chap2:sec:exp}.
 
 Further, we save the continuous representations of the examples into the memory of the meta-classifier.
 So later, the top-$k$ examples can be efficiently retrieved via the index (address) in the memory. 
@@ -201,7 +204,7 @@ Then the meta-classifier computes the similarity score between $x_t$ and each $x
 \label{chap2:sec:1vsmany}
 
 To compute the overall probability between a test example and a seen class, a 1-vs-many matching layer in the meta-classifier first computes the individual similarity score between the test example and each of the top-$k$ retrieved examples of the seen class. 
-The 1-vs-many matching layer essentially consists of $k$ shared matching networks as indicated by big yellow triangles in Fig. \ref{chap2:fig:overview}.
+The 1-vs-many matching layer essentially consists of $k$ shared matching networks as indicated by big yellow triangles in \ref{chap2:fig:overview}.
 We denote each matching network as $f(\cdot, \cdot)$ and compute similarity scores $r_{1:k}$ for all top-$k$ examples $r_{1:k}=f(x_t, x_{a_{1:k}} )$.
 
 The matching network first transforms the test example $x_t$ and $x_{a_{i}}$ from the continuous representation space to a single example in similarity space.
@@ -218,14 +221,15 @@ We then pass the result to two fully-connected layers (one with Relu activation)
 r_i=f(x_t, x_{a_i} )=\sigma\Big(W_2\cdot\text{Relu}\big(W_1\cdot f_\text{sim}(x_t, x_{a_i} ) +b_1\big)+b_2\Big).
 \end{equation}
 Since there are $k$ nearest examples, we have $k$ similarity scores denoted as $r_{1:k}$.
-The hyper-parameters are detailed in Sec. \ref{chap2:sec:exp}.
+The hyper-parameters are detailed in Chapter \ref{chap2:sec:exp}.
 
 %\subsubsection{Open-world Learning via Aggregation Layer}
-\textbf{Open-world Learning via Aggregation Layer}\\
+\textbf{Open-world Learning via Aggregation Layer}
 \label{chap2:sec:agg}
+
 After getting the individual similarity scores, an aggregation layer in the meta-classifier merges the $k$ similarity scores into a single probability indicating whether the test example $x_t$ belongs to the seen class.
 By having the aggregation layer, the meta-classifier essentially has a \textit{parametric voting mechanism} so that it can learn how to vote on multiple nearest examples (rather than a single example) from a seen class to decide the probability.
-As a result, the meta-classifier can have more reliable predictions, which is studied in Sec. \ref{chap2:sec:exp}.
+As a result, the meta-classifier can have more reliable predictions, which is studied in Chapter \ref{chap2:sec:exp}.
 
 We adopt a (many-to-one) BiLSTM \cite{hochreiter1997long,schuster1997bidirectional} as the aggregation layer.
 We set the output size of BiLSTM to 2 (1 per the direction of LSTM). 
@@ -237,7 +241,7 @@ p(c|x_t, x_{a_{1:k}} )=\sigma\big(W\cdot \text{BiLSTM}(r_{1:k})+b\big).
 \end{equation}
 %Lastly,
 Inspired by DOC \cite{shu-xu-liu:2017:EMNLP2017}, 
-for each class $c \in S$, we evaluate Eq. \ref{chap2:eq:p} as:
+for each class $c \in S$, we evaluate \ref{chap2:eq:p} as:
 \begin{equation} 
     \label{chap2:eq:rej}
         \hat{y} = \left\{
@@ -249,20 +253,19 @@ for each class $c \in S$, we evaluate Eq. \ref{chap2:eq:p} as:
     %     }
 \end{equation}
 If none of existing seen classes $S$ gives a probability above $0.5$, we \emph{reject} $x_t$ as an example from some unseen class.
-Note that given a large number of classes, eq. \ref{chap2:eq:rej} can be efficiently implemented in parallel. We leave this to future work.
+Note that given a large number of classes, \ref{chap2:eq:rej} can be efficiently implemented in parallel. We leave this to future work.
 To make L2AC an easily accessible approach, we use $0.5$ as the threshold naturally and do not introduce an extra hyper-parameter that needs to be artificially tuned.
 Note also that as discussed earlier, the seen class set $S$ and its examples can be dynamically maintained (e.g., one can add to or remove from $S$ any class). So the meta-classifier simply performs open-world classification over the current seen class set $S$.
 
-%\subsection{Training of Meta-Classifier}
-\textbf{Training of Meta-Classifier}\\
+\textbf{Training of Meta-Classifier}
 \label{chap2:sec:train}
-% (??? I added a reason)
+
 Since the meta-classifier is a general classifier that is supposed to work for any class,
 training the meta-classifier $p_\theta(c|x_t, x_{a_{1:k}|x_t, c} )$
 requires examples from another set $M$ of classes called \textit{meta-training classes}.
 
 A large $|M|$ is desirable so that meta-training classes have good coverage of features for seen and unseen classes in testing, which is in a similar spirit to few-shot learning \cite{lake2011one}. 
-We also enforce $ (S\cup U) \cap M=\varnothing$ in Sec. \ref{chap2:sec:exp}, so that all seen and unseen classes are unknown to the meta-classifier.
+We also enforce $ (S\cup U) \cap M=\varnothing$ in Chapter \ref{chap2:sec:exp}, so that all seen and unseen classes are unknown to the meta-classifier.
 
 Next, we formulate the meta-training examples from $M$, which consist of a set of pairs 
 (with positive and negative labels). 
@@ -283,12 +286,13 @@ Since the classes tested by the meta-classifier are unexpected, we further use a
 \section{Results}
 \label{chap2:sec:exp}
 
-We want to address the following Research Questions (RQs):
+We want to address the following Research Questions (RQs) in experiments:
 \textbf{RQ1} - what is the performance of the meta-classifier with different settings of top-$k$ examples and $n$ negative classes?
 \textbf{RQ2} - How is the performance of L2AC compared with state-of-the-art text classifiers for open-world classification (which all need some forms of re-training).
 
 %\subsection{Dataset}
-\textbf{Dataset}\\
+\textbf{Dataset}
+
 We leverage the huge amount of product descriptions from the Amazon Datasets \cite{he2016ups} and form the OWL task as the following.
 Amazon.com maintains a tree-structured category system. 
 We consider each path to a leaf node as a class.
@@ -304,20 +308,20 @@ For all datasets, we use NLTK(\url{https://www.nltk.org/}) as the tokenizer, and
 This gives us 17,526 unique words.
 We take the maximum length of each document as 120 since the majority of product descriptions are under 100 words.
 
-%\subsection{Ranker}
-\textbf{Ranker}\\
+\textbf{Ranker}
+
 We use cosine similarity to rank the examples in each seen (or meta-training) class for a given test (or meta-training) example $x_t$ (or $x_q$)(Given many examples to process, the ranker can be implemented in a fully parallel fashion to speed up the processing, which we leave to future work as it is beyond the scope of this work.).
 We apply cosine directly on the hidden representations of the encoder as $cosine(h_*, h_{a_{i}})=\frac{h_* \cdot h_{a_{i}}}{|h_*|_2|h_{a_{i}}|_2}$, where $*$ can be either $t$ or $q$, $|\cdot|_2$ denotes the $l$-2 norm and $\cdot$ denotes the dot product of two examples.
 
-Training the meta-classifier also requires a ranking of negative classes for a meta-training example $x_q$, as discussed in Sec. %\ref{sec:train}.
+Training the meta-classifier also requires a ranking of negative classes for a meta-training example $x_q$, as discussed in Chapter \ref{chap2:sec:train}.
 We first compute a \textit{class vector} for each meta-training class. 
 This class vector is averaged over all encoded representations of examples of that class.
 Then we rank classes by computing cosine similarity between the class vectors and the meta-training example $x_q$.
 The top-$n$ (defined in the previous section) classes are selected as negative classes for $x_q$.
 We explore different settings of $n$ later.
 
-%\subsection{Evaluation}
-\textbf{Evaluation}\\
+\textbf{Evaluation}
+
 Similar to \cite{shu-xu-liu:2017:EMNLP2017}, we choose 25, 50, and 75 classes from the (classification) test set of 100 classes as the seen classes for three (3) experiments.
 Note that each class in the test set has 150 examples, where 100 examples are for the training of baseline methods or used as seen class examples for L2AC and 50 examples are for testing both the baselines and L2AC.
 We evaluate the results on all 100 classes for those three (3) experiments.
@@ -333,8 +337,8 @@ We use this metric because macro F1 has a bias on the importance of rejection wh
 For example, when the number of seen classes is small, the rejection class should have a higher weight as a classifier on a small seen set is more likely challenged by examples from unseen classes.
 Further, to stabilize the results, we train all models with 10 different initializations and average the results.
 
-%\subsection{Hyper-parameters}
-\textbf{Hyper-parameters}\\
+\textbf{Hyper-parameters}
+
 For simplicity, we leverage a BiLSTM \cite{hochreiter1997long,schuster1997bidirectional} on top of a GloVe \cite{pennington2014glove} embedding (840b.300d) layer as the encoder (other choices are also possible).
 Similar to feature encoders trained from ImageNet~\cite{russakovsky2015imagenet}, we train classification over the encoder training set with 1000 classes and use 5\% of the encoding training data as encoder validation data.
 We apply dropout rates of 0.5 to all layers of the encoder. 
@@ -348,8 +352,7 @@ For validation, we select 50 examples for each class. The rest 50 examples from 
 We perform grid search of averaged weighted F1 over 10 runs for $k\in\{1, 3, 5, 10, 15, 20\}$ and $n\in \{1, 3, 5, 9\}$, where \textbf{$k=5$} and \textbf{$n=9$} reach a reasonably well weighted F1 (87.60\%). Further increasing $n$ gives limited improvements (e.g., 87.69\% for $n=14$ and 87.68\% for $n=19$, when $k=5$). But a large $n$ significantly increases the number of training examples (e.g., $n=14$ ended with more than 1 million meta-training examples) and thus training time. So we decide to select $k=5$ and $n=9$ for all ablation studies below.
 Note the validation classes are also used to compute (formulated in a way similar to the meta-training classes) the validation loss for selecting the best model during Adam \cite{kingma2014adam} optimization.
 
-%\subsection{Compared Methods}
-\textbf{Compared Methods}\\
+\textbf{Compared Methods}
 
 \begin{table*}[t]
 \centering    
@@ -425,14 +428,14 @@ We use this baseline to show that the aggregation layer is effective in learning
 \textbf{L2AC-$k$5-$n$9-AbsSub/Sum}: To show that using two similarity functions ($f_\text{abssub}(\cdot, \cdot)$ and $f_\text{sum}(\cdot, \cdot)$ ) gives better results, we further perform ablation study by using only one of those similarity functions at a time, which gives us two baselines.\\
 \textbf{L2AC-$k$5-$n$9/14/19}: this baseline has the best $k=5$ and $n=9$ on the validation classes, as indicated in the previous subsection. Interestingly, further increasing $k$ may reduce the performance as L2AC may focus on not-so-similar examples. We also report results on $n=14$ or $19$ to show that the results do not get much better. 
 
-%\subsection{Results Analysis}
-\textbf{Results Analysis}\\
+\textbf{Results Analysis}
+
 From Table \ref{chap2:tbl:result}, we can see that L2AC outperforms DOC, especially when the number of seen classes is small. 
-First, from Fig. \ref{chap2:fig:kn} we can see that $k=5$ and $n=9$ gets reasonably good results.
+First, from \ref{chap2:fig:kn} we can see that $k=5$ and $n=9$ gets reasonably good results.
 Increasing $k$ may harm the performance as taking in more examples from a class may let L2AC focus on not-so-similar examples, which is bad for classification. More negative classes give L2AC better performance in general but further increasing $n$ beyond 9 has little impact.
 
 Next, we can see that as we incrementally add more classes, L2AC gradually drops its performance (which is reasonable due to more classes) but it still yields better performance than DOC. Considering that L2AC needs no training with additional classes, while DOC needs full training from scratch, L2AC  represents a major advance. Note that testing on 25 seen classes is more about testing a model's rejection capability while testing on 75 seen classes is more about the classification performance of seen class examples.
-From Table \ref{chap2:tbl:result}, we notice that L2AC can effectively leverage multiple nearest examples and negative classes.
+From \ref{chap2:tbl:result}, we notice that L2AC can effectively leverage multiple nearest examples and negative classes.
 In contrast, the non-parametric voting of L2AC-$n$9-Vote3 over top-3 examples may not improve the performance but introduce higher variances.
 Our best $k=5$ indicates that the meta-classifier can dynamically leverage multiple nearest examples instead of solely relying on a single example.
 As an ablation study on the choices of similarity functions, running L2AC on a single similarity function gives poorer results as indicated by either L2AC-$k$5-$n$9-AbsSub or L2AC-$k$5-$n$9-Sum.

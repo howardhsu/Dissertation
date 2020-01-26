@@ -1,30 +1,29 @@
 \chapter{NLP Applications}
 \label{chap6:nlp}
 
-In this chapter, I switch to NLP applications that leverage the concept of lifelong representation learning.
-I will first focus on tasks in aspect-based sentiment analysis: aspect extraction and aspect sentiment classification.
-Then I will discuss its application in question answering.
-I will propose some novel review-based QA tasks, with results indicating the importance of lifelong representation.
-Next, I will switch to the dialogue system.
-I will first talk about the conversational version of QA and then switch to a novel type of dialogue system: conversational recommendation, which leverages lifelong graph representation learning for reasoning dialogue policy.
-%\section{Product Type Classification}
-%\label{chap6:sec:tc}
-%\section{Complemenary Entity Recognition}
-%\label{chap6:sec:cer}
+In this chapter, I apply the concept of lifelong representation learning for a wide spectrum of NLP applications.
+Natural language processing needs lifelong learning because as a form of human knowledge, texts need to be integrated into the agent for understanding and reasoning for agent's policy.
+
+I will first focus on two (2) tasks in aspect-based sentiment analysis: aspect extraction and aspect sentiment classification.
+Then I switch to a novel task in my earlier years of PhD study: complementary entity recognition, which aims to identify multiple entities and their relations.
+Then I switch to review-based question answering. Reading comprehension is an important task in question answering because its good usage of human writen texts for answers. I will propose some novel review-based QA tasks, with results indicating the importance of lifelong representation.
+Lastly, I will switch to the dialog system.
+I will first talk about the conversational version of QA and then switch to a novel type of dialog system: conversational recommendation, which leverages lifelong graph representation learning for reasoning dialog policy.
 
 \section{Sentiment Analysis}
 \label{chap6:sec:sa}
 
-Sentiment analysis aims to detect people's polarity from opinion text \cite{Liu2012}.
-More specifically aspect-based sentiment analysis (ABSA) aims to detect the aspects $a$ in opinion texts and their associated polarities $(a, p)$s.
-This naturally has two sub-tasks in ABSA: aspect extraction and aspect sentiment classification.
+Sentiment analysis aims to detect people's polarity from opinion text such as reviews and tweets \cite{Liu2012}.
+More specifically, aspect-based sentiment analysis (ABSA) focuses in fine-grained sentiment analysis over aspects and possibly their categories.
+ABSA aims to detect the aspects $a$ in opinion texts and their associated polarities $(a, p)$s.
+This naturally has two sub-tasks in ABSA: \underline{aspect extraction} and \underline{aspect sentiment classification}.
 
 \subsection{-- Aspect Extraction}
 
-One key task of fine-grained sentiment analysis of product reviews is to extract product aspects or features that users have expressed opinions on. This paper focuses on supervised aspect extraction using deep learning. Unlike other highly sophisticated supervised deep learning models, this paper proposes a novel and yet simple CNN model employing two types of pre-trained embeddings for aspect extraction: general-purpose embeddings and domain-specific embeddings. Without using any additional supervision, this model achieves surprisingly good results, outperforming state-of-the-art sophisticated existing methods. To our knowledge, this paper is the first to report such a double embeddings based CNN model for aspect extraction and achieve very good results. 
+%One key task of fine-grained sentiment analysis of product reviews is to extract product aspects or features that users have expressed opinions on. This paper focuses on supervised aspect extraction using deep learning. Unlike other highly sophisticated supervised deep learning models, this paper proposes a novel and yet simple CNN model employing two types of pre-trained embeddings for aspect extraction: general-purpose embeddings and domain-specific embeddings. Without using any additional supervision, this model achieves surprisingly good results, outperforming state-of-the-art sophisticated existing methods. To our knowledge, this paper is the first to report such a double embeddings based CNN model for aspect extraction and achieve very good results. 
 
 %\section{Introduction}
-Aspect extraction is an important task in sentiment analysis \cite{HuL2004} and has many applications \cite{Liu2012}.
+Aspect extraction is an important task in sentiment analysis \cite{HuL2004} and has many applications to its downstream tasks\cite{Liu2012}.
 It aims to extract opinion targets (or aspects) from opinion text. 
 In product reviews, aspects are product attributes or features. 
 For example, from ``\textit{Its speed is incredible}'' in a laptop review, it aims to extract ``speed''. 
@@ -37,7 +36,7 @@ How to achieve competitive performances without manually crafting features is an
 (2) According to Occam's razor principle \cite{blumer1987occam}, a simple model is always preferred over a complex model.
 This is especially important when the model is deployed in a real-life application (e.g., chatbot), where a complex model will slow down the speed of inference. Thus, to achieve competitive performance whereas keeping the model as simple as possible is important. This paper proposes such a model. 
 
-To address the first consideration, we propose a double embeddings mechanism that is shown crucial for aspect extraction.
+To address the first consideration, we propose a double embeddings mechanism (as discussed in Chapter \ref{chap3:word}) that is shown crucial for aspect extraction.
 The embedding layer is the very first layer, where all the information about each word is encoded.
 The quality of the embeddings determines how easily later layers (e.g., LSTM, CNN or attention) can decode useful information.
 Existing deep learning models for aspect extraction use either a pre-trained general-purpose embedding, e.g., GloVe \cite{pennington2014glove}, or a general review embedding \cite{poria2016aspect}.
@@ -54,12 +53,12 @@ Although most existing models use LSTM \cite{hochreiter1997long} as the core bui
 One major drawback of LSTM is that LSTM cells are sequentially dependent.
 The forward pass and backpropagation must serially go through the whole sequence, which slows down the training/testing process
 \footnote{We notice that a GPU with more cores has no training time gain on a low-dimensional LSTM because extra cores are idle and waiting for the other cores to sequentially compute cells.}.
-One challenge of applying CNN on sequence labeling is that convolution and max-pooling operations are usually used for summarizing sequential inputs and the outputs are not well-aligned with the inputs. We discuss the solutions in Section \ref{chap3:sec:model}.
-
+One challenge of applying CNN on sequence labeling is that convolution and max-pooling operations are usually used for summarizing sequential inputs and the outputs are not well-aligned with the inputs. %We discuss the solutions in Section \ref{chap3:sec:model}.
 We call the proposed model \underline{D}ual \underline{E}mbeddings \underline{CNN} (DE-CNN).
 To the best of our knowledge, this is the first paper that reports a double embedding mechanism and a pure CNN-based sequence labeling model for aspect extraction.
 
-\textbf{Related Work}\\
+\textbf{Related Work}
+
 Sentiment analysis has been studied at document, sentence and aspect levels \cite{Liu2012,Pang2008OMS,Cambria2012}. This work focuses on the aspect level \cite{HuL2004}. Aspect extraction is one of its key tasks and has been performed using both unsupervised and supervised approaches. 
 The unsupervised approach includes methods such as frequent pattern mining \cite{HuL2004,PopescuNE2005}, syntactic rules-based extraction \cite{ZhuangJZ2006,WangBo2008,QiuLBC2011}, topic modeling \cite{MeiLWSZ2007,TitovM2008,Lin2009,Moghaddam2011}, word alignment \cite{KangLiu2013IJCAI} and label propagation \cite{Zhou-wan-xiao:2013:EMNLP,shu2016lifelong}.
 
@@ -78,22 +77,23 @@ CNN \cite{lecun1995convolutional,kim2014convolutional} is recently adopted for n
 CNN classifiers are also used in sentiment analysis \cite{poria2016aspect,chen2017improving}.
 We adopt CNN for sequence labeling for aspect extraction because CNN is simple and parallelized.
 
-\textbf{Double Embedding for Sequence Labeling}\\
-Following the idea of fusion general and domain-specific embeddings in \ref{chap3}, we have the following CNN-based model for aspect extraction.
+\textbf{Double Embedding for Sequence Labeling}
+
+Following the idea of fusion general and domain-specific embeddings in \ref{chap3:word}, we have the following CNN-based model for aspect extraction.
 %As a counter-example, if the training/testing data is in the \textit{laptop} domain, then embeddings from the \textit{electronics} domain are considered to be out-of-domain embeddings (e.g., the word ``adapter'' may represent different types of adapters in \textit{electronics} rather than exactly a \textit{laptop} adapter). That is, only laptop reviews are considered to be in domain. 
 
-The proposed model is depicted in Figure \ref{chap3:fig:fr}.
+The proposed model is depicted in \ref{chap6:fig:fr}.
 It has 2 embedding layers, 4 CNN layers, a fully-connected layer shared across all positions of words, and a softmax layer over the labeling space $\mathcal{Y}=\{B, I, O\}$ for each position of inputs.
 Note that an aspect can be a phrase and $B$, $I$ indicate the beginning word and non-beginning word of an aspect phrase and $O$ indicates non-aspect words.
 
 \begin{figure}[H]
 \centering    
 \includegraphics[width=5.in]{fig/acl18_fig.png}
-    %\caption{Overview of DE-CNN: red vectors are zero vectors; purple triangles are CNN filters. }
     \caption{DE-CNN}
-    \label{chap3:fig:fr}
+    \label{chap6:fig:fr}
 \end{figure}
 
+After leveraging the double embedding layers discussed in Chapter \ref{chap3:sec:double}, we apply CNN layers for building representations for aspect extraction.
 A CNN layer has many 1D-convolution filters and each (the $r$-th) filter has a fixed kernel size $k=2c+1$ and performs the following convolution operation and ReLU activation: 
 %\vspace{-0.5cm}
 \begin{equation}
@@ -112,36 +112,13 @@ We will discuss the details of the hyper-parameters in the experiment section.
 Finally, we apply a fully-connected layer with weights shared across all positions and a softmax layer to compute label distribution for each word.
 The output size of the fully-connected layer is $|\mathcal{Y}|=3$.
 We apply dropout after the embedding layer and each ReLU activation.
-Note that we do not apply any max-pooling layer after convolution layers because a sequence labeling model needs good representations for every position and max-pooling operation mixes the representations of different positions, which is undesirable (we show a max-pooling baseline in the next section).
+Note that we do not apply any max-pooling layer after convolution layers because a sequence labeling model needs good representations for every position and max-pooling operation mixes the representations of different positions, which is undesirable (we show a max-pooling baseline in the experiments).
 
+We further conduct BERT model for aspect extraction. We omit the details of BERT for aspect extraction as it is already discussed in Chapter \ref{chap4:context}.
 
-\textbf{Aspect Extraction from Pre-trained Language Model}\\
-Further, based on the technique of post-training in \ref{chap4}, we can also use the weights of pre-train or post-training for aspect extraction with an extra layer of token type classification.
+\textbf{Experiments}
 
-We only extend BERT with one extra task-specific layer and fine-tune BERT on each end task.
-This can be illustrated in the second sub-figure in \ref{chap6:fig:overview}.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=3.0in]{fig/naacl19_overview.png}
-    %\caption{Overview of BERT settings for review reading comprehension (RRC), aspect extraction (AE) and aspect sentiment classification (ASC).}
-    \caption{BERT for end tasks}
-\label{chap6:fig:overview}
-\vspace{-3mm}
-\end{figure}
-%As a core task in ABSA, aspect extraction (AE) aims to find aspects that reviewers have expressed opinions on \cite{hu2004mining}. 
-%In supervised settings, it is typically modeled as a sequence labeling task, where each token from a sentence is labeled as one of $\{\textit{\underline{B}egin}, \textit{\underline{I}nside}, \textit{\underline{O}utside}\}$. A continuous chunk of tokens that are labeled as one \textit{B} and followed by zero or more \textit{I}s forms an aspect.
-The input sentence with $m$ words is constructed as $x=(\texttt{[CLS]}, x_1, \dots, x_m, \texttt{[SEP]})$.
-After $h=\text{BERT}(x)$, we apply a dense layer and a softmax for each position of the sequence: $l_3=\text{softmax}(W_3 \cdot h + b_3)$, where $W_3 \in \mathbb{R}^{3*r_h}$ and $b_3 \in \mathbb{R}^3$ (3 is the total number of labels (\textit{BIO})).  Softmax is applied along the dimension of labels for each position and $l_3 \in [0, 1]^{3*|x|}$. The labels are predicted as taking argmax function at each position of $l_3$ and the loss function is the averaged cross entropy across all positions of a sequence.
-
-AE is a task that requires intensive domain knowledge (e.g., knowing that ``screen'' is a part of a laptop). Previous study \cite{xu_acl2018} has shown that incorporating domain word embeddings greatly improve the performance. 
-Adapting BERT's general language models to domain reviews is crucial for AE,
-as shown in Sec. %\ref{chap6:sec:exp}.
-
-
-\textbf{Datasets}\\
-
-\begin{table}[H]
+\begin{table}
     \label{tab:dataset} 
     \centering
     \scalebox{0.8}{
@@ -153,11 +130,9 @@ as shown in Sec. %\ref{chap6:sec:exp}.
             SemEval-16 Restaurant&2000/1743            &676/622\\\hline
         \end{tabular}
     }
-    %\caption{Dataset description with the number of sentences(\#S.) and number of aspect terms(\#A.)}
     \caption{Dataset for AE}
 \end{table}
 
-\textbf{Results}\\
 Following the experiments of a recent aspect extraction paper \cite{li2017deep},
 we conduct experiments on two benchmark datasets from SemEval challenges \cite{pontiki2014SemEval,pontiki2016semeval} as shown in Table \ref{tab:dataset}. 
 The first dataset is from the \textit{laptop} domain on subtask 1 of SemEval-2014 Task 4.
@@ -213,13 +188,14 @@ We use all \textit{electronics} reviews as the out-of-domain corpus for the \tex
 
 \textbf{DE-CNN-CRF} replaces the softmax activation with a CRF layer\footnote{\url{https://github.com/allenai/allennlp}}. We use this baseline to demonstrate that CRF may not further improve the challenging performance of aspect extraction.
 
-\textbf{Hyper-parameters of DE-CNN}\\
+\textbf{Hyper-parameters of DE-CNN}
+
 We hold out 150 training examples as validation data to decide the hyper-parameters.
 The first CNN layer has 128 filters with kernel sizes $k=3$ (where $c=1$ is the number of words on the left (or right) context) and 128 filters with kernel sizes $k=5$ ($c=2$).
 The rest 3 CNN layers have 256 filters with kernel sizes $k=5$ ($c=2$) per layer.
 The dropout rate is 0.55 and the learning rate of Adam optimizer \cite{kingma2014adam} is 0.0001 because CNN training tends to be unstable.
 
-\begin{table}[H]
+\begin{table}
     \label{chap6:tab:result} 
     \centering
     \scalebox{0.85}{
@@ -245,15 +221,15 @@ The dropout rate is 0.55 and the learning rate of Adam optimizer \cite{kingma201
         DE-OOD-CNN & 80.21 & 74.2 \\
         DE-Google-CNN & 78.8 & 72.1 \\
         DE-CNN-CRF & 80.8 & 74.1 \\
-        DE-CNN &\textbf{81.59}* &\textbf{74.37}* \\
+        DE-CNN &\textbf{81.59} &\textbf{74.37} \\
         \hline
         \end{tabular}
     }
-    %\caption{Comparison results in F$_1$ score: numbers in the third group are averaged scores of 5 runs as in \cite{li2017deep}. * indicates the result is statistical significant at the level of 0.05.}
     \caption{F$_1$ score for AE}
 \end{table}
 
-\textbf{Results and Analysis}\\
+\textbf{Results and Analysis of DE-CNN}
+
 Table \ref{chap6:tab:result} shows that DE-CNN performs the best. 
 The double embedding mechanism improves the performance and in-domain embeddings are important. 
 We can see that using general embeddings (GloVe-CNN) or domain embeddings (Domain-CNN) alone gives an inferior performance. 
@@ -281,22 +257,23 @@ One type comes from inconsistent labeling (e.g., for the restaurant data, the sa
 Another major type of error comes from unseen aspects in test data that require the semantics of the conjunction word ``and'' to extract. For example, if A is an aspect and when ``A and B'' appears, B should also be extracted but not.
 We leave this to future work.
 
-
 We further conduct experiments for the results of DE-CNN with language model (BERT) based methods.
 
-\textbf{Hyper-parameters of BERT}\\
+\textbf{Hyper-parameters of BERT}
 \label{chap6:sec:hyp}
+
 We adopt $\textbf{BERT}_\textbf{BASE}$ (uncased) as the basis for all experiments\footnote{We expect $\textbf{BERT}_\textbf{LARGE}$ to have better performance but leave that to future work due to limited computational power.}.~Since post-training may take a large footprint on GPU memory (as BERT pre-training), we leverage FP16 computation\footnote{\url{https://docs.nvidia.com/deeplearning/sdk/mixed-precision-training/index.html}} to reduce the size of both the model and hidden representations of data.~We set a static loss scale of 2 in FP16, which can avoid any over/under-flow of floating-point computation.
 The maximum length of post-training is set to 320 with a batch size of 16 for each type of knowledge.~The number of sub-batch $u$ is set to 2, which is good enough to store each sub-batch iteration into a GPU memory of 11G. We use Adam optimizer and set the learning rate to be 3e-5.
 We train 70,000 steps for the laptop domain and 140,000 steps for the restaurant domain, which roughly have one pass over the pre-processed data on the respective domain.
 
-\textbf{Baseline Methods for BERT}\\
+\textbf{Baseline Methods for BERT}
+
 \textbf{BERT} leverages the vanilla BERT pre-trained weights and fine-tunes on all 3 end tasks. We use this baseline to answer RQ2 and show that BERT's pre-trained weights alone have limited performance gains on review-based tasks.\\
 \textbf{BERT-DK} post-trains BERT's weights only on domain knowledge (reviews) and fine-tunes on the 3 end tasks. We use BERT-DK and the following BERT-MRC to answer RQ3.\\
 \textbf{BERT-MRC} post-trains BERT's weights on SQuAD 1.1 and then fine-tunes on the 3 end tasks.\\
-\textbf{BERT-PT} (proposed method) post-trains BERT's weights using the joint post-training algorithm in Section \ref{chap4:sec:post-training} and then fine-tunes on the 3 end tasks.
+\textbf{BERT-PT} (proposed method) post-trains BERT's weights using the joint post-training algorithm in Chapter \ref{chap4:sec:post-training} and then fine-tunes on the 3 end tasks.
 
-\textbf{Discussion of Results}
+\textbf{Results of BERT}
 
 \begin{table}[H]
     \centering
@@ -331,66 +308,12 @@ Errors mostly come from annotation inconsistency and boundaries of aspects (e.g.
 
 \subsection{-- Aspect Sentiment Classification}
 
-As a subsequent task of AE, aspect sentiment classification (ASC) aims to classify the sentiment polarity (positive, negative, or neutral) expressed on an aspect extracted from a review sentence.
-There are two inputs to ASC: an aspect and a review sentence mentioning that aspect.
+As a downstream task of aspect extraction, \underline{A}spect-based \underline{s}entiment \underline{c}lassification (ASC) is an important task in fine-grained sentiment analysis.
+In this subsection, we focus on two (2) improvements of ASC: (1) using pre-trained / post-trained BERT for ASC; (2) improving the post-trained BERT with the technique of hard example learning.
+Hard examples are one challenge for ASC because its datasets that are typically rare but very important for learning aspect-level sentiment (e.g., sentences with different polarities for different aspects).
 
-Let $x=(\texttt{[CLS]}, q_1, \dots, q_m, \texttt{[SEP]}, d_1, \dots, d_n, \texttt{[SEP]})$, where $q_1, \dots, q_m$ now is an aspect (with $m$ tokens) and $d_1, \dots, d_n$ is a review sentence containing that aspect.
-After $h=\text{BERT}(x)$, we leverage the representations of \texttt{[CLS]} $h_{\text{[CLS]}}$, which is the aspect-aware representation of the whole input.
-The distribution of polarity is predicted as $l_4=\text{softmax}(W_4 \cdot h_{\text{[CLS]}} + b_4)$, where $W_4 \in \mathbb{R}^{3*r_h}$ and $b_4 \in \mathbb{R}^3$ (3 is the number of polarities). Softmax is applied along the dimension of labels on \texttt{[CLS]}: $l_4 \in [0, 1]^{3}$.
-Training loss is the cross-entropy on the polarities.
+\textbf{Hard Examples Learning for Aspect Sentiment Classification}
 
-As a summary of these tasks, insufficient supervised training data significantly limits the performance gain across these 3 review-based tasks.~Although BERT's pre-trained weights strongly boost the performance of many other NLP tasks on formal texts, we observe in Sec. \ref{chap6:sec:exp} that BERT's weights only result in a limited gain or worse performance compared with existing baselines.
-In the next section, we introduce the post-training step to boost the performance of all these 3 tasks.
-
-\textbf{datasets}\\
-For ASC, we use SemEval 2014 Task 4 for both laptop and restaurant as existing research frequently uses this version. We use 150 examples from the training set of all these datasets for validation.
-
-\begin{table}[H]
-    \centering
-    \scalebox{0.78}{
-        \begin{tabular}{l||c c|c c}
-        \hline
-        {\bf Domain} & {\bf Laptop} & & {\bf Rest.} & \\
-        \hline
-        {\bf Methods} & \bf{Acc.} & \bf{MF1} & \bf{Acc.} & \bf{MF1} \\
-        \hline
-        \begin{tabular}{@{}l@{}}
-        MGAN \cite{li2018exploiting}\end{tabular} & 76.21 & 71.42 & 81.49 & 71.48 \\
-        \hline
-        BERT & 75.29 & 71.91 & 81.54 & 71.94 \\
-        BERT-DK & 77.01 & 73.72 & 83.96 & 75.45 \\
-        BERT-MRC & 77.19 & 74.1 & 83.17 & 74.97 \\
-        BERT-PT & 78.07 & \textbf{75.08} & 84.95 & \textbf{76.96} \\
-        \hline
-        \end{tabular}
-    }
-    \caption{ASC in Accuracy and Macro-F1(MF1).}
-\label{chap6:tbl:result_asc}
-\vspace{-5mm}
-\end{table}
-
-\textbf{Compared Methods and Evaluation Metrics}\\
-\textbf{MGAN} \cite{li2018exploiting} reaches the state-of-the-art ASC on SemEval 2014 task 4.
-We compute both accuracy and Macro-F1 over 3 classes of polarities, where Macro-F1 is the major metric as the imbalanced classes introduce biases on accuracy.~To be consistent with existing research \cite{tang2016aspect}, examples belonging to the \textit{conflict} polarity are dropped due to a very small number of examples.
-
-
-\textbf{Results Discussion}\\
-ASC, we observed that large-scale annotated MRC data is very useful.
-We suspect the reason is that ASC can be interpreted as a special MRC problem, where all questions are about the polarity of a given aspect.
-MRC training data may help BERT to understand the input format of ASC given their closer input formulation.
-Again, domain knowledge post-training also helps ASC.
-ASC tends to have more errors as the decision boundary between the negative and neutral examples is unclear (e.g., even annotators may not sure whether the reviewer shows no opinion or slight negative opinion when mentioning an aspect).
-Also, BERT-PT has the problem of dealing with one sentence with two opposite opinions (``The screen is good but not for windows.''). We believe that such training examples are rare.
-
-
-\subsection{Hard Examples Learning for Aspect Sentiment Classification}
-
-\underline{A}spect-based \underline{s}entiment \underline{c}lassification (ASC) is an important task in fine-grained sentiment analysis.
-One challenge, however, is the hard examples in ASC datasets that are typically rare but very important for learning aspect-level sentiment (e.g., sentences with different polarities for different aspects).
-This paper focuses on learning hard examples for ASC and proposes a simple \underline{a}daptive \underline{r}e-\underline{w}eighting (ARW) scheme to dramatically improve ASC for such complex sentences. Experimental results show that ARW is effective \footnote{The dataset and code will be released for future research.}.
-
-
-\textbf{Introduction}\\
 Hard examples play an non-neglectable role in many machine learning applications.
 Many datasets contain a certain number of rare examples that are hard to learn, as can be found in imbalance issues or fairness issues in machine learning \footnote{\url{https://venturebeat.com/2019/01/24/amazon-rekognition-bias-mit/}}.
 On one hand, the reason is from data collection that can easily and unintentionally bias a dataset.
@@ -472,7 +395,8 @@ We experimentally show that models trained with ARW significantly improves contr
 %Then we propose several ablation studies on existing ASC baselines to test their performance beyond a simpler sentence-level sentiment classifier.
 %Later, we discuss potential solutions to this issue.
 
-\noindent\textbf{Related Work.}
+\textbf{Related Work}
+
 %The rare instance problem can be regarded as an imbalanced data problem in machine learning in general. Most existing studies in machine learning on imbalanced data focus on imbalanced classes or skewed class distributions, e.g., some classes with very few examples  \cite{huang2016learning,buda2018systematic,tantithamthavorn2018impact,johnson2019survey}. 
 Hard example mining is mostly studied in object detection\cite{shrivastava2016training,lin2017focal}, which aims to detect long-tailed and imbalanced classes of sub-regions in one image.
 In \cite{lin2017focal}, a loss-based weighting is proposed to adjust weights without explicitly re-balance the complex class distribution. 
@@ -490,6 +414,7 @@ We also notice that AdaBoost is not frequently used in deep learning~\cite{schwe
 
 \textbf{Adaptive Re-Weighting Algorithm}
 \label{sec:arw}
+
 %In this section, we first describe the motivation for developing a new training scheme instead of following the canonical training process. 
 %Then we describe the general idea of designing the \underline{a}daptive \underline{r}e-\underline{w}eighting (ARW) scheme and the detailed scheme afterward. %After that, a general property of ARW is also presented.
 
@@ -580,7 +505,6 @@ Given this unwanted behavior of optimization, a natural idea is to detect them a
     }
 \end{algorithm}
 
-%\subsection{Proposed Training Scheme}
 Since training in supervised learning has access to ground-truth labels, detecting hard examples naturally means to find examples the current model cannot classify correctly.
 Assuming we have $n$ training examples.
 Let incorrect (hard) examples to be those with $y_{i}\neq \hat{y}_{i}$ for $i \in [1, n]$, where $\hat{y}_{i}$ is the prediction of the $i$-th training example from the current model and $y_{i}$ is the ground-truth label.
@@ -600,8 +524,10 @@ We define an indicator variable $\mathbb{I}[y_{i} \neq \hat{y}_{i}]$ to pick the
 Note that the reason for using the weighted error rate instead of just the error rate is that the weighted error rate reflects the hardness on optimizing hard examples instead of simply example-level errors. We will detail the formula in the next subsection.
 For example, when the weighted error rate is high (e.g., $>0.5$), instead of increasing the weights for incorrect examples, we probably need to reduce them so as to avoid learning too much noise.
 Lastly, the weight adjustment for incorrect examples is determined by the (correct-versus-incorrect) ratio $(\frac{(1-r)+\epsilon}{r-\epsilon})$. So when this value is larger than $1$, multiply it to increase the weights; otherwise to decrease the weights.
-Here we introduce a weight assignment factor $\epsilon$, which is a hyperparameter to control whether the model should favor even more weights (e.g., $\epsilon>0$) or not (e.g., $\epsilon<0$).\\
-\textbf{ARW Algorithm}\\
+Here we introduce a weight assignment factor $\epsilon$, which is a hyperparameter to control whether the model should favor even more weights (e.g., $\epsilon>0$) or not (e.g., $\epsilon<0$).
+
+\textbf{ARW Algorithm}
+
 The proposed ARW algorithm is shown in Algorithm \ref{alg:arw}.
 In Line 1, it initializes the weights of all training examples uniformly.
 Lines 2-12 pass through the training data epoch-by-epoch and update the example weights at the end of each epoch.
@@ -639,7 +565,7 @@ As a result, Algorithm \ref{alg:arw} keeps track of the weights $w_{1:n}$ for al
 
 %From Eq. \ref{eq:eq}, we can see that the ARW algorithm essentially adjusts the total weights for hard examples to the (?? what you mean by 'to the'?) total weights of easy examples so to balance the total weights for correct and incorrect examples.
 
-\textbf{Experiment}\\
+\textbf{Experiment}
 \label{sec:exp}
 
 %Our experiment consists of two parts: (1) show the failure of existing approaches and (2) demonstrate the effectiveness of the ARW scheme.
@@ -651,8 +577,7 @@ As a result, Algorithm \ref{alg:arw} keeps track of the weights $w_{1:n}$ for al
 %\textbf{RQ5}: How important is the term $\text{Contra}(\cdot)$ (in Lines 11 and 13), given it needs preprocessing to find which sentence is contrastive?\\
 %\textbf{RQ6}: Can ARW tackle more examples from contrastive sentences before early stopping (via the validation set) ?
 
-
-\textbf{Dataset}\\
+\textbf{Dataset}
 
 We adopt the SemEval 2014 Task 4\footnote{http://alt.qcri.org/semeval2014/task4} datasets, which 
 %to demonstrate how rare those contrastive sentences are. These datasets 
@@ -665,7 +590,7 @@ The contrastive test set of laptop is augmented with extra annotated examples fr
 %Disagreements are discussed until agreements are reached.
 
 
-\begin{table}[t]
+\begin{table}
 \centering
 \scalebox{0.9}{
     \begin{tabular}{l|c|c}
@@ -764,8 +689,49 @@ The contrastive test set of laptop is augmented with extra annotated examples fr
 %\section{The Proposed Adaptive Example Re-weighting Scheme}
 
 
-%\subsection{Failure of Existing Approaches}
-\textbf{Baselines}\\
+%\textbf{datasets}
+
+%For ASC, we use SemEval 2014 Task 4 for both laptop and restaurant as existing research frequently uses this version. We use 150 examples from the training set of all these datasets for validation.
+\textbf{Results of BERT}
+
+We first discuss the results of post-training BERT from Chapter \ref{chap4:context}. We have the following state-of-the-art baseline:\\
+\textbf{MGAN} \cite{li2018exploiting} reaches the state-of-the-art ASC on SemEval 2014 task 4.
+We compute both accuracy and Macro-F1 over 3 classes of polarities, where Macro-F1 is the major metric as the imbalanced classes introduce biases on accuracy.~To be consistent with existing research \cite{tang2016aspect}, examples belonging to the \textit{conflict} polarity are dropped due to a very small number of examples.
+
+\begin{table}
+    \centering
+    \scalebox{0.78}{
+        \begin{tabular}{l||c c|c c}
+        \hline
+        {\bf Domain} & {\bf Laptop} & & {\bf Rest.} & \\
+        \hline
+        {\bf Methods} & \bf{Acc.} & \bf{MF1} & \bf{Acc.} & \bf{MF1} \\
+        \hline
+        \begin{tabular}{@{}l@{}}
+        MGAN \cite{li2018exploiting}\end{tabular} & 76.21 & 71.42 & 81.49 & 71.48 \\
+        \hline
+        BERT & 75.29 & 71.91 & 81.54 & 71.94 \\
+        BERT-DK & 77.01 & 73.72 & 83.96 & 75.45 \\
+        BERT-MRC & 77.19 & 74.1 & 83.17 & 74.97 \\
+        BERT-PT & 78.07 & \textbf{75.08} & 84.95 & \textbf{76.96} \\
+        \hline
+        \end{tabular}
+    }
+    \caption{ASC in Accuracy and Macro-F1(MF1).}
+\label{chap6:tbl:result_asc}
+\vspace{-5mm}
+\end{table}
+
+ASC, we observed that large-scale annotated MRC data is very useful.
+We suspect the reason is that ASC can be interpreted as a special MRC problem, where all questions are about the polarity of a given aspect.
+MRC training data may help BERT to understand the input format of ASC given their closer input formulation.
+Again, domain knowledge post-training also helps ASC.
+ASC tends to have more errors as the decision boundary between the negative and neutral examples is unclear (e.g., even annotators may not sure whether the reviewer shows no opinion or slight negative opinion when mentioning an aspect).
+Also, BERT-PT has the problem of dealing with one sentence with two opposite opinions (``The screen is good but not for windows.''). We believe that such training examples are rare.
+
+Next we discuss the results of ARW.
+
+\textbf{Baselines for ARW}
 \label{chap6:sec:baselines}
 
 %To demonstrate existing ASC systems' difficulty with contrastive sentences, we used a range of ASC baselines and tested their performance on examples from contrastive sentences (contrastive test set). 
@@ -787,9 +753,9 @@ For the last model, we further challenge it by removing the aspects from the tes
 In this way, we want to test the performance of BERT-DK under a setting with no access to aspects. 
 %We want to see whether its performance on the \emph{Full Test Set} is affected much or not. Note that this is not a traditional sentence-level classifier as the training process is still under ASC task. % This is effectively a sentence-level sentiment classification.  
 
-\begin{table}[t]
+\begin{table}
 \centering
-\scalebox{0.66}{
+\scalebox{0.6}{
     \begin{tabular}{l|c c|c c}
     \hline
      & \bf{Laptop} & & \bf{Rest.} & \\
@@ -897,7 +863,7 @@ Note that we also experimented with a number of other manual weighting schemes a
 \textbf{+Focal Loss.} We compute weights as $(1-p)^\gamma$ \cite{lin2017focal}, where $p$ is the probability of prediction on the ground-truth label (from softmax) and $\gamma$ is a hyper-parameter. We use $\gamma = 2.0 $ from the original paper that works best for ASC, too.\\ % no assumption about humans to discover the issue of rare true examples for ASC.
 %\textbf{+ARW} This is the proposed training scheme, which is intended to answer RQ3.\\ % no assumption about humans to discover the issue of rare true examples for ASC.
 \textbf{+ARW.} This is the proposed training algorithm. This method discovers all incorrect examples, which include examples from the contrastive sentences set and other examples. We search $\epsilon \in \{-0.2, -0.1, -0.05, 0.0, 0.05, 0.1, 0.2\}$ and use $\epsilon = -0.05 $ for results.\\
-\textbf{+ARW w/ manual initial weighting.} We further investigate the use of +Manual Re-weighting's weighting function as the initial weights and then use ARW for adaptive re-weighting.\\
+\textbf{+ARW w/ manual initial weighting.} We further investigate the use of +Manual Re-weighting's weighting function as the initial weights and then use ARW for adaptive re-weighting.
 %\begin{table}[t]
 %\centering
 %\scalebox{0.75}{
@@ -925,7 +891,8 @@ Note that we also experimented with a number of other manual weighting schemes a
 %\label{tbl:bal_contra}
 %\end{table}
 
-\textbf{Hyper-parameters}\\
+\textbf{Hyper-parameters}
+
 %(?? the writing of this part should also be careful as we said we build on top of Bert-DK) 
 %We leverage the base model of BERT to be consistent with the existing paper \cite{xu_bert2019}. 
 For all methods, we use Adam optimizer and set the learning rate to 3e-5. The batch size is set as 32.
@@ -957,8 +924,9 @@ Lastly, all results are averaged over 10 runs.
 %\caption{Number of incorrectly predicted training examples (\# incorrect examples from contra. sent.) from contrastive sentences in one run of training: the training of the model is early stopped by validation set.}
 %\label{tbl:pred}
 %\end{table}
-\textbf{Result Analysis}\\
-From Table \ref{tbl:failure}, %we can see existing ASC classifiers perform poorly on the contrastive test sets. %, which contain real ASC examples only.
+\textbf{Result Analysis}
+
+From \ref{chap6:tbl:failure}, %we can see existing ASC classifiers perform poorly on the contrastive test sets. %, which contain real ASC examples only.
 we can see that all existing ASC baselines have significant drops on contrastive test set for both Accuracy (Acc.) and F1 score, indicating the hardness of this testing set.
 %as most existing models reach more than 70\% on both accuracy and F1 on the full test set.
 %Lastly, 
@@ -990,13 +958,14 @@ Focal loss does not perform well. The reason is that the ``soft'' probability ma
 %For \emph{Contrastive Test Set}, we noticed that given the limited number of contrastive sentences in training, some implicit sentiment transitions (or switching, such as no word like ``but'', etc.) is hard to learn (e.g., ``The screen is great and I can live with the keyboard's slightly smaller size.''). 
 %Also, contrastive sentences with \emph{neutral} polarity is harder. This is because there may be no transition, but just one aspect with \emph{pos}/\emph{neg} opinion and one aspect with no opinion (\emph{neutral}). We believe using larger unlabeled corpora for training could benefit the contrastive test set. We leave that to our future work.
 %For the \emph{Full Test Set}, diverse and rare opinion expressions are also a very challenging problem to solve. Further, some fine-grained or uncommon opinion expressions are even hard to recognize by human annotators, resulting in annotation errors.
-\text{Conclusion}\\
-This paper focuses on hard example learning for \underline{A}spect-based \underline{s}entiment \underline{c}lassification (ASC).
+%\text{Conclusion}
+
+%This paper focuses on hard example learning for \underline{A}spect-based \underline{s}entiment \underline{c}lassification (ASC).
 %~Deep supervised ASC approaches typically model this task as a pair-wise classification task that takes an aspect and a sentence containing the aspect and outputs the polarity of the aspect in that sentence. 
 %Instead of One challenge, however, is the hard examples in ASC datasets that are typically rare but very important for learning aspect-level sentiment (e.g., sentences with different polarities for different aspects).
 %we discovered that many existing approaches fail to learn an effective ASC classifier but more like a sentence-level sentiment classifier because they have difficulty to handle sentences with different polarities for different aspects.
 %~This paper first demonstrates this problem using several state-of-the-art ASC models. 
-We proposed a simple ARW algorithm to dramatically improve ASC for hard examples and using contrastive sentences to test the effectiveness of hard example learning.
+%We proposed a simple ARW algorithm to dramatically improve ASC for hard examples and using contrastive sentences to test the effectiveness of hard example learning.
 
 \section{Complementary Entity Recognition}
 
@@ -1008,11 +977,14 @@ In this section, we discuss the usage of post-training to question answering.
 We focus on a novel review-based task called review reading comprehension (RRC).
 
 \subsection{-- Motivation}
+%\subsection{-- Review Reading Comprehension (RRC)}
+\label{chap6:sec:rrc}
+
 Question-answering plays an important role in e-commerce as it allows potential customers to actively seek crucial information about products or services to help their purchase decision making. 
 Inspired by the recent success of machine reading comprehension (MRC) on formal documents, this paper explores the potential of turning customer reviews into a large source of knowledge that can be exploited to answer user questions.~We call this problem \textit{\underline{R}eview \underline{R}eading \underline{C}omprehension} (RRC). To the best of our knowledge, no existing work has been done on RRC. In this work, we first build an RRC dataset called ReviewRC based on a popular benchmark for aspect-based sentiment analysis.~Since ReviewRC has limited training examples for RRC (and also for aspect-based sentiment analysis), we then explore a novel post-training approach on the popular language model BERT to enhance the performance of fine-tuning of BERT for RRC.
 To show the generality of the approach, the proposed post-training is also applied to some other review-based tasks such as aspect extraction and aspect sentiment classification in aspect-based sentiment analysis. 
 
-For online commerce, question-answering (QA) serves either as a standalone application of customer service or as a crucial component of a dialogue system that answers user questions.
+For online commerce, question-answering (QA) serves either as a standalone application of customer service or as a crucial component of a dialog system that answers user questions.
 Many intelligent personal assistants (such as Amazon Alexa and Google Assistant) support online shopping by allowing the user to speak directly to the assistants. 
 One major hindrance to this mode of shopping is that such systems have limited capability to answer user questions about products (or services), which are vital for customer decision making.
 As such, an intelligent agent that can automatically answer customers' questions is very important for the success of online businesses.
@@ -1026,7 +998,7 @@ Inspired by the success of \underline{M}achine \underline{R}eading \underline{C}
 \textbf{Problem Definition}: Given a question $q=(q_1, \dots, q_m)$ from a customer (or user) about a product and a review $d=(d_1, \dots, d_n)$ for that product containing the information to answer $q$, find a sequence of tokens (a text span) $a=(d_s, \dots, d_e)$ in $d$ that answers $q$ correctly, where $1 \le s \le n$, $1\le e \le n$, and $s\le e$.
 
 \label{sec:intro}
-\begin{table}[H]
+\begin{table}
     \centering
     \scalebox{0.87}{
         \begin{tabular}{|l|}
@@ -1054,20 +1026,21 @@ Inspired by the success of \underline{M}achine \underline{R}eading \underline{C}
     \label{chap6:tbl:example}
 \end{table}
 
-A sample \emph{laptop} review is shown in Table \ref{chap6:tbl:example}. 
+A sample \emph{laptop} review is shown in \ref{chap6:tbl:example}. 
 We can see that customers may not only ask factoid questions such as the specs about some aspects of the laptop as in the first and second questions but also subjective or opinion questions about some aspects (capacity of the hard drive), as in the third question.
 RRC poses some \textit{domain challenges} compared to the traditional MRC on Wikipedia, such as the need for rich product knowledge, informal text, and fine-grained opinions (there is almost no subjective content in Wikipedia articles). Research also shows that yes/no questions are very frequent for products with complicated specifications \cite{mcauley2016addressing,Xu2018pro}.
 
 To the best of our knowledge, no existing work has been done in RRC. This work first builds an RRC dataset called ReviewRC, using reviews from SemEval 2016 Task 5\footnote{\url{http://alt.qcri.org/semeval2016/task5/}. We choose these review datasets to align RRC with existing research on sentiment analysis.}, which is a popular dataset for aspect-based sentiment analysis (ABSA) \cite{hu2004mining} in the domains of \emph{laptop} and \emph{restaurant}.
-We detail ReviewRC in Sec. \ref{chap6:sec:exp}.
+We detail ReviewRC in Chapter \ref{chap6:sec:exp}.
 Given the wide spectrum of domains (types of products or services) in online businesses and the prohibitive cost of annotation, ReviewRC can only be considered to have a limited number of annotated examples for supervised training, which still leaves the domain challenges partially unresolved.
 
 To simplify the writing, we refer MRC as a general-purpose RC task on formal text (non-review) and RRC as an end-task specifically focused on reviews.), where the former enhances domain-awareness and the latter strengthens MRC task-awareness.
 Although BERT gains great success on SQuAD, this success is based on the huge amount of training examples of SQuAD (100,000+).
 This amount is large enough to ameliorate the flaws of BERT that has almost no questions on the left side and no textual span predictions based on both the question and the document on the right side.
-However, a small amount of fine-tuning examples is not sufficient to turn BERT to be more task-aware, as shown in Sec. 
+However, a small amount of fine-tuning examples is not sufficient to turn BERT to be more task-aware.
 
-\textbf{Related Works}\\
+\textbf{Related Works}
+
 Many datasets have been created for MRC from formally written and objective texts, e.g., Wikipedia (WikiReading \cite{hewlett2016wikireading}, SQuAD \cite{rajpurkar2016squad,rajpurkar2018know}, WikiHop \cite{welbl2018constructing}, DRCD \cite{shao2018drcd}, QuAC \cite{choi2018quac}, HotpotQA \cite{yang2018hotpotqa}) news and other articles (CNN/Daily Mail \cite{hermann2015teaching}, NewsQA \cite{trischler2016newsqa}, RACE \cite{lai2017race}), fictional stories (MCTest \cite{richardson2013mctest}, CBT \cite{hill2015goldilocks}, NarrativeQA \cite{kovcisky2018narrativeqa}), and general Web documents (MS MARCO \cite{nguyen2016ms}, TriviaQA \cite{joshi2017triviaqa}, SearchQA \cite{dunn2017searchqa} ). 
 Also, CoQA \cite{reddy2018coqa} is built from multiple sources, such as Wikipedia, Reddit, News, Mid/High School Exams, Literature, etc.
 To the best of our knowledge, MRC has not been used on primarily subjective reviews. As such, we created a review-based MRC dataset called ReviewRC.
@@ -1091,23 +1064,12 @@ We push forward this trend with the recent advance in pre-trained language model
 Although it is practical to train domain word embeddings from scratch on large-scale review corpora \cite{xu_acl2018}, it is impractical to train language models from scratch with limited computational resources.
 As such, we show that it is practical to adapt language models pre-trained from formal texts to domain reviews.
 
-\subsection{-- Review Reading Comprehension (RRC)}
-\label{chap6:sec:rrc}
-Following the success of SQuAD \cite{rajpurkar2016squad} and BERT's SQuAD implementation, we design review reading comprehension as follows.
-Given a question $q=(q_1, \dots, q_m)$ asking for an answer from a review $d=(d_1, \dots, d_n)$, we formulate the input as a sequence $x=(\texttt{[CLS]}, q_1, \dots, q_m, \texttt{[SEP]}, d_1, \dots, d_n, \texttt{[SEP]})$, where \texttt{[CLS]} is a dummy token not used for RRC and \texttt{[SEP]} is intended to separate $q$ and $d$.
-Let $\text{BERT}(\cdot)$ be the pre-trained (or post-trained as in the next section) BERT model. We first obtain the hidden representation as $h=\text{BERT}(x) \in \mathbb{R}^{r_h*|x|}$, where $|x|$ is the length of the input sequence and $r_h$ is the size of the hidden dimension. Then the hidden representation is passed to two separate dense layers followed by softmax functions: $l_1=\text{softmax}(W_1 \cdot h + b_1)$ and $l_2=\text{softmax}(W_2 \cdot h + b_2)$, where $W_1$, $W_2 \in \mathbb{R}^{r_h}$ and $b_1, b_2 \in \mathbb{R}$. The \text{softmax} is applied along the dimension of the sequence.
-The output is a span across the positions in $d$ (after the \texttt{[SEP]} token of the input), indicated by two pointers (indexes) $s$ and $e$ computed from $l_1$ and $l_2$: $s=\argmax_{ \text{Idx}_{\texttt{[SEP]}} < s<|x|}(l_1)$ and $e=\argmax_{s\le e<|x|}(l_2)$, where $\text{Idx}_{\texttt{[SEP]}}$ is the position of token \texttt{[SEP]} (so the pointers will never point to tokens from the question).
-As such, the final answer will always be a valid text span from the review as $a=(d_s, \dots, d_e)$.
-
-Training the RRC model involves minimizing the loss that is designed as the averaged cross entropy on the two pointers: $$\mathcal{L}_{\text{RRC}}=-\frac{\sum \log l_1 \mathbb{I}(s)+ \sum \log l_2 \mathbb{I}(e)}{2},$$ where $\mathbb{I}(s)$ and $\mathbb{I}(e)$ are one-hot vectors representing the ground truths of pointers.
-
 RRC may suffer from the prohibitive cost of annotating large-scale training data covering a wide range of domains. 
 And BERT severely lacks two kinds of prior knowledge: (1) large-scale domain knowledge (e.g., about a specific product category), and (2) task-awareness knowledge (MRC/RRC in this case).
-We detail the technique of jointly incorporating these two types of knowledge in %Sec. \ref{chap6:sec:pt}.
+We detail the technique of jointly incorporating these two types of knowledge as a post-training stage in Chapter \ref{chap4:context}.
 
-\text{Results}\\
+\textbf{Results}
 
-\textbf{Datasets}\\
 As there are no existing datasets for RRC and
 to be consistent with existing research on sentiment analysis, we adopt the \textit{laptop} and \textit{restaurant} reviews of SemEval 2016 Task 5 as the source to create datasets for RRC.
 We do not use SemEval 2014 Task 4 or SemEval 2015 Task 12 because these datasets do not come with the review(document)-level XML tags to recover whole reviews from review sentences.~We keep the split of training and testing of the SemEval 2016 Task 5 datasets and annotate multiple QAs for each review following the way of constructing QAs for the SQuAD 1.1 datasets \cite{rajpurkar2016squad}.
@@ -1118,7 +1080,7 @@ The textual spans are labeled to be as concise as possible but still human-reada
 Note that the annotations for sentiment analysis tasks are not exposed to annotators to avoid biased annotation on RRC.
 Since it is unlikely that the two annotators can label the same QAs (the same questions with the same answer spans), they further mutually check each other's annotations and disagreements are discussed until agreements are reached.~Annotators are encouraged to label as many questions as possible from testing reviews to get more test examples. A training review is encouraged to have 2 questions (training examples) on average to have good coverage of reviews.
 
-The annotated data is in the format of SQuAD 1.1 \cite{rajpurkar2016squad} to ensure compatibility with existing implementations of MRC models. The statistics of the RRC dataset (ReviewRC) are shown in Table \ref{chap6:tbl:rrc}. 
+The annotated data is in the format of SQuAD 1.1 \cite{rajpurkar2016squad} to ensure compatibility with existing implementations of MRC models. The statistics of the RRC dataset (ReviewRC) are shown in \ref{chap6:tbl:rrc}. 
 Since SemEval datasets do not come with a validation set, we further split 20\% of reviews from the training set for validation.
 
 \begin{table}[H]
@@ -1142,7 +1104,8 @@ Since SemEval datasets do not come with a validation set, we further split 20\% 
 \end{table}
 
 
-\textbf{Compared Methods}\\
+\textbf{Compared Methods}
+
 As BERT outperforms existing open-source MRC baselines by a large margin, we do not intend to exhaust existing implementations but focus on variants of BERT introduced in this paper.
 
 \textbf{DrQA} is a baseline from the document reader\footnote{https://github.com/facebookresearch/DrQA} of DrQA \cite{chen2017reading}.~We adopt this baseline because of its simple implementation for reproducibility.~We run the document reader with random initialization and train it directly on ReviewRC.
@@ -1153,13 +1116,14 @@ We fine-tune document reader with ReviewRC. We expand the vocabulary of the embe
 
 For AE and ASC, we summarize the scores of the state-of-the-arts on SemEval (based the best of our knowledge) for brevity.\\
 
-Lastly, to answer RQ1, RQ2, and RQ3, we have the following BERT variants.\\
-\textbf{BERT} leverages the vanilla BERT pre-trained weights and fine-tunes on all 3 end tasks. We use this baseline to answer RQ2 and show that BERT's pre-trained weights alone have limited performance gains on review-based tasks.\\
-\textbf{BERT-DK} post-trains BERT's weights only on domain knowledge (reviews) and fine-tunes on the 3 end tasks. We use BERT-DK and the following BERT-MRC to answer RQ3.\\
+Lastly, we have the following BERT variants.\\
+\textbf{BERT} leverages the vanilla BERT pre-trained weights and fine-tunes on all 3 end tasks. We use this baseline to show that BERT's pre-trained weights alone have limited performance gains on review-based tasks.\\
+\textbf{BERT-DK} post-trains BERT's weights only on domain knowledge (reviews) and fine-tunes on the 3 end tasks. We use BERT-DK and the following BERT-MRC.\\
 \textbf{BERT-MRC} post-trains BERT's weights on SQuAD 1.1 and then fine-tunes on the 3 end tasks.\\
 \textbf{BERT-PT} (proposed method) post-trains BERT's weights using the joint post-training algorithm in Section \ref{chap4:sec:post-training} and then fine-tunes on the 3 end tasks.
 
-\textbf{Evaluation Metrics and Model Selection}\\
+\textbf{Evaluation Metrics and Model Selection}
+
 To be consistent with existing research on MRC,
 we use the same evaluation script from SQuAD 1.1 \cite{rajpurkar2016squad} for RRC, which reports Exact Match (EM) and F1 scores.
 EM requires the answers to have an exact string match with human-annotated answer spans.
@@ -1169,7 +1133,7 @@ Each F1 score is the harmonic mean of individual precision and recalls computed 
 We set the maximum number of epochs to 4 for BERT variants, though most runs converge just within 2 epochs.
 Results are reported as averages of \textbf{9} runs (9 different random seeds for random batch generation).\footnote{We notice that adopting 5 runs used by existing researches still has a high variance for a fair comparison.} 
 
-\textbf{Result Analysis}\\
+\textbf{Result Analysis}
 
 \begin{table}[H]
     \centering
@@ -1196,7 +1160,7 @@ Results are reported as averages of \textbf{9} runs (9 different random seeds fo
 \end{table}
 
 
-The results of RRC are shown in Tables \ref{chap6:tbl:result_rc}. 
+The results of RRC are shown in \ref{chap6:tbl:result_rc}. 
 We observed that the proposed joint post-training (BERT-PT) has the best performance on all tasks in all domains, which show the benefits of having two types of knowledge.
 To our surprise, we found that the vanilla pre-trained weights of BERT do not work well for review-based tasks, although it achieves state-of-the-art results on many other NLP tasks \cite{devlin2018bert}.
 This justifies the need to adapt BERT to review-based tasks.
@@ -1209,23 +1173,24 @@ We further investigated the examples improved by BERT-MRC and found that the bou
 The errors on RRC mainly come from boundaries of spans that are not concise enough and incorrect location of spans that may have certain nearby words related to the question. 
 We believe precisely understanding user's experience is challenging from only domain post-training given limited help from the RRC data and no help from the Wikipedia data.
 
-\section{Dialogue System}
-\label{chap6:sec:dialogue}
+\section{Dialog System}
+\label{chap6:sec:dialog}
 
-Given the recent popularity of research in a dialogue system, I further discuss the usage of lifelong representation learning for conversational AI.
+Given the recent popularity of research in dialog system, I further discuss the usage of lifelong representation learning for conversational AI.
 I mainly focus on two tasks: one is the extension of RRC discussed in the previous section; the other is a novel task called conversational recommendation that aims to learn dynamic graph reasoning.
 
 \subsection{-- Review Conversational Reading Comprehension (RCRC)}
+\label{chap6:sec:rcrc}
 
-Inspired by conversational reading comprehension (CRC), this work studies a novel task of leveraging reviews as a source to build an agent that can answer multi-turn questions from potential consumers of online businesses. We first build a review CRC dataset and then propose a novel task-aware pre-tuning step running between language model (e.g., BERT) pre-training and domain-specific fine-tuning.~The proposed pre-tuning requires no data annotation, but can greatly enhance the performance on our end task. Experimental results show that the proposed approach is highly effective and has competitive performance as the supervised approach.
+%Inspired by conversational reading comprehension (CRC), this work studies a novel task of leveraging reviews as a source to build an agent that can answer multi-turn questions from potential consumers of online businesses. We first build a review CRC dataset and then propose a novel task-aware pre-tuning step running between language model (e.g., BERT) pre-training and domain-specific fine-tuning.~The proposed pre-tuning requires no data annotation, but can greatly enhance the performance on our end task. Experimental results show that the proposed approach is highly effective and has competitive performance as the supervised approach.
 
 Seeking information to assess whether a product or service suits one's needs is an important activity in consumer decision making.
 One major hindrance for online businesses is that the consumers often have difficulty to get answers to their questions.
 With the ever-changing environment, it is very hard, if not impossible, for businesses to pre-compile an up-to-date knowledge base to answer user questions as in KB-QA \cite{kwok2001scaling,fader2014open,yin2015neural,xu2016question}.
 Although community question-answering (CQA) helps~\cite{mcauley2016addressing}, one has to be lucky to get an existing customer to answer a question quickly. There is work on retrieving whole reviews relevant to a question~\cite{mcauley2016addressing,yu2018aware}, but it is not ideal for the user to read the whole reviews to fish for answers.
 
-\begin{table}[H]
-    %\caption{Review conversational reading comprehension (RCRC) (best viewed in colors): a dialogue with 5 turns of customers' questions and answer spans from a review.}
+\begin{table}
+    %\caption{Review conversational reading comprehension (RCRC) (best viewed in colors): a dialog with 5 turns of customers' questions and answer spans from a review.}
     \caption{Review conversational reading comprehension (RCRC)}
     \centering
     \scalebox{0.75}{
@@ -1256,7 +1221,7 @@ Although community question-answering (CQA) helps~\cite{mcauley2016addressing}, 
     
 Inspired by conversational reading comprehension (CRC) \cite{reddy2018coqa,choi2018quac,xu-etal-2019-bert}, we explore the possibility of turning reviews into a valuable source of knowledge of real-world experiences and using it to answer customer or user multi-turn questions.~We call this \textit{\underline{R}eview \underline{C}onversational \underline{R}eading \underline{C}omprehension} (RCRC).
 The conversational setting enables the user to go into details via more specific questions and to simplify their questions by either omitting or co-referencing information in the previous context.
-As shown in Table \ref{chap6:tbl:crc_example}, 
+As shown in \ref{chap6:tbl:crc_example}, 
 the user first has an \textit{opinion} question about ``retina display'' (an \textit{aspect}) of a laptop.~Then he/she carries (or omits) the question type \textit{opinion} from the first question to the second question about another \textit{aspect} ``boot-up speed''.
 Later, he/she carries the \textit{aspect} of the second question, but changes the question type to \textit{opinion reason} and then co-references the \textit{aspect} ``SSD'' from the third answer and asks for the capacity (a \textit{sub-aspect}) of ``SSD''.
 Unfortunately, there is no answer in this review. 
@@ -1274,22 +1239,23 @@ As a result, the challenge is how to effectively improve the performance of RCRC
 We adopt BERT \cite{devlin2018bert} as our base model since it can be either a feature encoder or a standalone model that achieves good performance on CRC \cite{reddy2018coqa}.
 BERT bears with task-agnostic features, which require task-specific architecture and many supervised training examples to train(fine-tune) on an end task.
 As $(\text{RC})_2$ has limited training data, 
-we propose a novel task-aware \textit{pre-tuning} to further bridge the gap between BERT pre-training and RCRC task-awareness.
+we propose a novel task-aware \textit{pre-tuning} to further bridge the gap between BERT pre-training and RCRC task-awareness, as discussed in Chapter \ref{chap4:context}.
 Pre-tuning requires no annotation of CRC (or RCRC) data but just QA pairs (from CQA) and reviews that are largely available online.
 The data are general and can potentially be used in other machine reading comprehension tasks.
 Experimental results show that the proposed approach achieves competitive performance even compared with the supervised approach using a large-scale annotated dataset.
 
 
-\textbf{Datasets}\\
+\textbf{Datasets}
+
 We adopt SemEval 2016 Task 5
 as the review source for RCRC (to be consistent with research in sentiment analysis), which contains two domains \textit{laptop} and \textit{restaurant}.
-We kept the split of training and testing and annotated dialogues on each review.
+We kept the split of training and testing and annotated dialogs on each review.
 The annotation guideline can be found in supplemental material\footnote{The annotated data is in the format of CoQA \cite{reddy2018coqa} to help future research. But we do not focus on generative annotation as in CoQA because businesses are sensitive to errors of generative models}.
 To ensure questions are real-world questions, annotators are first asked to read hundreds of community questions and answers (CQA) from real customers.
-The statistics of the annotated $(\text{RC})_2$ dataset is shown in Table \ref{chap6:tbl:rcrc}.
+The statistics of the annotated $(\text{RC})_2$ dataset is shown in \ref{chap6:tbl:rcrc}.
 We use 20\% of the training reviews as the validation set for each domain.
 
-\begin{table}[H]
+\begin{table}
     \caption{Statistics of $(\text{RC})_2$ Datasets.}
     \centering
     \scalebox{0.9}{
@@ -1298,7 +1264,7 @@ We use 20\% of the training reviews as the validation set for each domain.
         Training &{\bf Laptop } &{\bf Restaurant} \\
         \hline
         \# of reviews & 445 & 350\\
-        \# of dialogues & 506 & 382\\
+        \# of dialogs & 506 & 382\\
         \# of dialog /w 3+ turns & 375 & 315\\
         \# of questions & 1679 & 1486\\
         \% of no answers & 24.3\%& 24.2\%\\
@@ -1325,7 +1291,8 @@ This ends with 197,333 restaurant reviews and 49,587 QA pairs. Based on the numb
 
 To compare with the performance of a fully-supervised approach,~we leverage the CoQA dataset with 7,199 documents (covering domains in Children’s Story, Mid/High School Literature, News, Wikipedia, etc.) and 108,647 turns of question/answer span annotated via crowdsourcing.
 
-\textbf{Compared Methods}\\
+\textbf{Compared Methods}
+
 We compare the following methods: \\
 \textbf{DrQA} is a CRC baseline coming with the CoQA dataset\footnote{https://github.com/stanfordnlp/coqa-baselines}. \\
 \textbf{DrQA+CoQA} is the above baseline pre-tuned on the CoQA dataset and then fine-tuned on $(\text{RC})_2$ to show that even DrQA pre-trained on CoQA is sub-optimal.\\
@@ -1334,7 +1301,8 @@ We compare the following methods: \\
 \textbf{BERT+CoQA} first fine-tunes BERT on the supervised CoQA data and then fine-tunes on $(\text{RC})_2$. We use this baseline to show that even compared with using this large-scale supervised data, our pre-tuning is still very competitive.\\
 \textbf{BERT+Pre-tuning} is the proposed approach.
 
-\textbf{Hyper-parameters and Evaluation}\\
+\textbf{Hyper-parameters and Evaluation}
+
 We set the maximum length of BERT to 256 with the maximum length of context+question to 96 ($h_\text{max}=9$ for Algorithm \ref{chap4:alg:pre-tuning}) and the batch size to 16.
 We perform pre-tuning for 10k steps. 
 CoQA fine-tuning converges in 2 epochs.
@@ -1342,10 +1310,9 @@ Fine-tune RCRC is performed for 4 epochs and most runs converged within \textbf{
 We search the maximum number of turns in context $C$ for RCRC fine-tuning using the validation set, which ends with 6 turns for laptop and 5 turns for restaurant.
 Results are reported as averages of 3 runs.
 To be consistent, we leverage the same evaluation script as CoQA, which reports 
-turn-level Exact Match (EM) and F1 scores for all turns in all dialogues.
+turn-level Exact Match (EM) and F1 scores for all turns in all dialogs.
 
-\begin{table}[H]
-    \caption{RCRC on EM (Exact Match) and F1.}
+\begin{table}
     \centering
     \scalebox{0.7}{
         \begin{tabular}{l||c c|c c}
@@ -1365,12 +1332,14 @@ turn-level Exact Match (EM) and F1 scores for all turns in all dialogues.
         \hline
         \end{tabular}
     }
+	\caption{RCRC on EM (Exact Match) and F1.}
 \label{chap6:tbl:result_rcrc}
 \vspace{-7mm}
 \end{table}
 
-\textbf{Result Analysis}\\
-As shown in Table \ref{chap6:tbl:result_rcrc}, 
+\textbf{Result Analysis}
+
+As shown in \ref{chap6:tbl:result_rcrc}, 
 BERT+Pre-tuning has significant performance gains over BERT fine-tuned directly on $(\text{RC})_2$ by \textbf{9\%}.
 BERT is overall better than DrQA.
 But directly using review documents to adapt BERT does not yield better results as in BERT+review.
@@ -1380,91 +1349,95 @@ However, our pre-tuning approach still has competitive performance and it requir
 We examine the errors of BERT+Pre-tuning and realize that both locations of span and span boundaries tend to have errors, indicating a significant room for improvement.
 
 \subsection{-- Memory-grounded Conversational Recommendation}
+\label{chap6:sec:mgcr}
 
-Conversational recommendation aims to collect users' up-to-date preferences through dialogue, instead of relying only on preferences learned offline.
+Conversational recommendation aims to collect users' up-to-date preferences through dialog, instead of relying only on preferences learned offline.
 However, most existing systems make an unnatural assumption that users' preferences can only be collected offline or online, and neglect the fact that the knowledge about a user is dynamic and cumulative.
 To this end, we propose a novel concept called \textit{user memory graph}, which aims to maintain the knowledge about a user in a structured form for interpretability.
-Each turn of dialogue is grounded onto this user memory graph for the reasoning of dialogue policy, and more importantly, further accumulation of user knowledge.
+Each turn of dialog is grounded onto this user memory graph for the reasoning of dialog policy, and more importantly, further accumulation of user knowledge.
 
-\textbf{Motivation}\\
+\textbf{Motivation}
+
 Traditional recommender systems (such as the collaborative filtering (CF) system) often aim to learn the static correlations between users' preferences and associated items' attributes.
 While it is a powerful approach that can leverage the vast offline user preferences data for effective recommendations, such a system is challenged when operating in the dynamic world, in which new users and items unseen during training frequently appear (so-called cold-start problems).
 More importantly, static systems fail to capture users' preferences that may change from time to time.
 
-\begin{figure}[H]
+\begin{figure}
 \centering    
 \includegraphics[width=0.9\columnwidth]{fig/acl19_teaser.png}
-    %\caption{A conceptual illustration of \textbf{Memory-grounded conversational recommendation}. (1) Conversational recommendation allows users to express preferences and requirements through dialogues. (2) Our \textit{MGConvRex} corpus is grounded on the memory graph (MG), which represents user's past preferences as well as newly added preferences.}
+    %\caption{A conceptual illustration of \textbf{Memory-grounded conversational recommendation}. (1) Conversational recommendation allows users to express preferences and requirements through dialogs. (2) Our \textit{MGConvRex} corpus is grounded on the memory graph (MG), which represents user's past preferences as well as newly added preferences.}
     \caption{Conceptual illustration of Memory-grounded conversational recommendation}
-\label{fig:dialogue}
+\label{fig:dialog}
 \vspace{-3mm}
 \end{figure}
 
-Conversational recommendation systems \cite{li2018towards} are recently introduced to mitigate some of these challenges by tracking users' up-to-date preferences through dialogues.
-Most of the previous works focus on extending the conventional task-oriented dialogue literature with a recommender system, which allows the conversational system to update user preferences online by asking relevant questions (called ``System Ask User Respond (SAUR)'' for the current dialogue.
+Conversational recommendation systems \cite{li2018towards} are recently introduced to mitigate some of these challenges by tracking users' up-to-date preferences through dialogs.
+Most of the previous works focus on extending the conventional task-oriented dialog literature with a recommender system, which allows the conversational system to update user preferences online by asking relevant questions (called ``System Ask User Respond (SAUR)'' for the current dialog.
 
-In summary, existing systems either favor a static offline recommendation over existing users or items or obtain short-term online updates on users' preferences via dialogues.
+In summary, existing systems either favor a static offline recommendation over existing users or items or obtain short-term online updates on users' preferences via dialogs.
 However, they unnaturally contrast offline with online preference learning and neglect the fact that the knowledge about a user is \textit{cumulative} in nature.
 An intelligent system should be able to dynamically maintain and utilize knowledge about a user collected so far for recommendations.
 
-To this end, we first introduce a novel concept called \textit{user memory graph} to represent dynamic knowledge about users and associated items in a structured graph (e.g., previous offline history of items visited/recommended, user preferences newly obtained through dialogues, etc.), allowing for easy and holistic reasoning for recommendations.
+To this end, we first introduce a novel concept called \textit{user memory graph} to represent dynamic knowledge about users and associated items in a structured graph (e.g., previous offline history of items visited/recommended, user preferences newly obtained through dialogs, etc.), allowing for easy and holistic reasoning for recommendations.
 We then propose a new conversational recommendation system grounded onto this graph, conceptually defined more formally as follows:
 
 \noindent\textbf{Memory-grounded Conversational Recommendation}:
 Given the history of previous items $\mathcal{H}$ (interacted or visited, etc.), candidate items $\mathcal{C}$ for recommendation, and their attributes (values), 
 an agent first (1) constructs a user memory graph $\mathcal{G} = \{(e, r, e')\vert e, e' \in \mathcal{E}, r \in \mathcal{R} \}$ for user $e_u$; 
-then (2) for each turn $d \in D$ of a dialogue, the agent updates $\mathcal{G}$ with tuples of preference $\mathcal{G}' \gets \mathcal{G} \cup \{(e_u, r_1, e_1), \dots\}$ ;
-(3) performs reasoning over $\mathcal{G}'$ to yield a dialogue policy $\pi$ that
+then (2) for each turn $d \in D$ of a dialog, the agent updates $\mathcal{G}$ with tuples of preference $\mathcal{G}' \gets \mathcal{G} \cup \{(e_u, r_1, e_1), \dots\}$ ;
+(3) performs reasoning over $\mathcal{G}'$ to yield a dialog policy $\pi$ that
 either (i) performs more rounds of interaction by asking for more preference, 
 or (ii) predicts optimal (or ground truth) items for recommendations $\mathcal{T} \subset \mathcal{C}$.
 
-\textbf{Related Work}\\
-\textbf{Conversational Recommendation}:
-Much existing research on conversational recommendation focus on combining a recommender system with a dialogue state tracking system, through the ``System Ask User Respond (SAUR)'' paradigm.
+\textbf{Related Work}
+
+\noindent \textbf{Conversational Recommendation}:
+Much existing research on conversational recommendation focus on combining a recommender system with a dialog state tracking system, through the ``System Ask User Respond (SAUR)'' paradigm.
 Once enough user preference is collected, such systems often make personalized recommendations to the user.
 For instance, \cite{li2018towards} proposes to mitigate cold-start users by learning users' preferences during conversations and by linking the learned preferences to existing similar users in a traditional recommender system.
 
-\cite{sun2018conversational,kang2019recommendation} propose a reinforcement learning (RL) setting for a conversational recommendation system, where the dialogue policy is learned with multiple policies and recommendation signals.
+\cite{sun2018conversational,kang2019recommendation} propose a reinforcement learning (RL) setting for a conversational recommendation system, where the dialog policy is learned with multiple policies and recommendation signals.
 
 \cite{zhang2018towards} leverages reviews to mimic online conversations to update an existing user's preference and re-rank items.
 
 \noindent \textbf{Task-oriented Dialogue Systems} are widely studied with multiple popular benchmark datasets \cite{dstc2, woz, multiwoz, multiwoz2.1,sgd-dst}.
 Most of the state-of-the-art approaches \cite{trade,bert-dst-alexa,bert-dst-cmu} focus on improving dialog state tracking with span-based pointer networks, which predicts information essential in completing a specified task (e.g., hotel booking, etc.)
 
-Note that while conversational recommendation systems bears similarity to task-oriented dialogue systems, the key difference is that conversational recommendation aims to collect user's fine-grained soft preferences or sentiments, and utilize them collectively for ranking of items or asking better questions (policy selection), instead of collecting hard constraints (e.g., number of people, time and location) to filter a database and locate a record. 
+Note that while conversational recommendation systems bears similarity to task-oriented dialog systems, the key difference is that conversational recommendation aims to collect user's fine-grained soft preferences or sentiments, and utilize them collectively for ranking of items or asking better questions (policy selection), instead of collecting hard constraints (e.g., number of people, time and location) to filter a database and locate a record. 
 
 \noindent \textbf{Graph Reasoning}:
 Graph network \cite{scarselli2008graph,duvenaud2015convolutional,defferrard2016convolutional,kipf2016semi} is a type of neural networks proposed to operate on graph structures. 
 Several extensions to the original graph neural network have been proposed \cite{li2015gated,pham2017column},
 most notably R-GCNs \cite{schlichtkrull2018modeling}, which can be applied on large-scale and highly multi-relational data.
 Many applications of GNNs include \cite{Xian2019ReinforcementKG}, which introduces graph-based reasoning for an offline recommendation system.
-A few works have recently been proposed to allow graph reasoning in dialogue systems.
-\cite{Moon+19a, Moon+19b} propose new corpus to learn knowledge graph paths that connect dialogue turns.
-\cite{tuan-etal-2019-dykgchat} introduces a knowledge-grounded dialogue generation task given a knowledge graph that is dynamically updated.
+A few works have recently been proposed to allow graph reasoning in dialog systems.
+\cite{Moon+19a, Moon+19b} propose new corpus to learn knowledge graph paths that connect dialog turns.
+\cite{tuan-etal-2019-dykgchat} introduces a knowledge-grounded dialog generation task given a knowledge graph that is dynamically updated.
 However, these workes often focus on response generation and do not address the conversational recommendation task.
 
 
-\textbf{Preliminary on Semantic Space}\\
-\label{chap6:sec:form}
-As discussed in the introduction, one key step to enable a dialogue being grounded and maintained on a user memory graph is to first define the semantic space of dialogue acts, items, their slots and values (we borrow these terms from task-oriented dialogue system, which refer to items' attributes) for utterances from both the user and agent.
-As a result, agents can turn unstructured utterances into structured data for user memory graph maintenance, integration and potentially future explainable reasoning for policy.
-In this section, we first introduce the dialogue acts for recommendation and then introduce slots and values specifically defined for the recommendation in a restaurant domain.
+\textbf{Definition of Dialog Acts, SLots and Values}
 
-\textbf{Dialogue Acts}
+\label{chap6:sec:form}
+As discussed in the introduction, one key step to enable a dialog being grounded and maintained on a user memory graph is to first define the semantic space of dialog acts, items, their slots and values (we borrow these terms from task-oriented dialog system, which refer to items' attributes) for utterances from both the user and agent.
+As a result, agents can turn unstructured utterances into structured data for user memory graph maintenance, integration and potentially future explainable reasoning for policy.
+In this section, we first introduce the dialog acts for recommendation and then introduce slots and values specifically defined for the recommendation in a restaurant domain.
+
+\textbf{Dialog Acts}
 \label{chap6:sec:dialog_act}
 
-The goal of designing dialogue acts $\mathcal{A}$ is to formalize the intentions from both the user and agent sides. 
-Table \ref{chap6:tbl:dialog_act} demonstrates the dialogue acts for both the user and the agent.
+The goal of designing dialog acts $\mathcal{A}$ is to formalize the intentions from both the user and agent sides. 
+\ref{chap6:tbl:dialog_act} demonstrates the dialog acts for both the user and the agent.
 From the agent's perspective, 
-note that although existing conversational recommendation\cite{sun2018conversational,li2018towards,zhang2018towards} assumes a passive user interacts with the system and propose a System Ask – User Respond (SAUR) paradigm, we further allow the user to actively participate in the recommendation by allowing User Ask - System Respond (UASR) paradigm. In our dialogue act, \textit{Open question}, \textit{Yes/no question} and \textit{Inform} can be used by a user to actively participate in the conversation. The dataset we created from crowd workers also indicates that human likes to use these active dialogue acts in the context of conversational recommendation (see Appendix).
+note that although existing conversational recommendation\cite{sun2018conversational,li2018towards,zhang2018towards} assumes a passive user interacts with the system and propose a System Ask – User Respond (SAUR) paradigm, we further allow the user to actively participate in the recommendation by allowing User Ask - System Respond (UASR) paradigm. In our dialog act, \textit{Open question}, \textit{Yes/no question} and \textit{Inform} can be used by a user to actively participate in the conversation. The dataset we created from crowd workers also indicates that human likes to use these active dialog acts in the context of conversational recommendation (see Appendix).
 
 
-\begin{table*}[H]
+\begin{table}
     \centering
     \scalebox{0.65}{
         \begin{tabular}{l|l l}
         \hline
-        \textbf{Dialogue Act $a$} & \textbf{Description} & \textbf{Examples} \\
+        \textbf{Dialog Act $a$} & \textbf{Description} & \textbf{Examples} \\
         \hline
         \textbf{User-side} & & \\
         \hline
@@ -1489,21 +1462,21 @@ note that although existing conversational recommendation\cite{sun2018conversati
     }
     \vspace{-2pt}
     %\caption{Dialogue acts for agent and user $\mathcal{A}$: the spans of items/slot values are italized.}     
-    \caption{Dialogue acts for agent and user $\mathcal{A}$}     
+    \caption{Dialog acts for agent and user $\mathcal{A}$}     
     \vspace{-11pt}
 \label{chap6:tbl:dialog_act}
-\end{table*}
+\end{table}
 
 \textbf{Slots and Values}
 \label{chap6:sec:slotvalue}
 
 This paper focuses on the recommendation in the restaurant domain.
 We utilize the customer review dataset, which is widely used in existing research in recommender systems.
-By leveraging the metadata of restaurants, we define slots $\mathcal{S}$ and their values $\mathcal{V}$ as shown in Table \ref{chap6:tbl:dialog_slot}. 
+By leveraging the metadata of restaurants, we define slots $\mathcal{S}$ and their values $\mathcal{V}$ as shown in \ref{chap6:tbl:dialog_slot}. 
 We select $\vert \mathcal{S} \vert = 10$ popular slots with rich values that can be encountered in the restaurant domain.
 We omit the full set of values for brevity and only list a few examples. (Please refer to our dataset for the exhaustive list).
 
-\begin{table}[H]
+\begin{table}[t]
     \centering
     \scalebox{0.7}{
         \begin{tabular}{l|l}
@@ -1531,19 +1504,20 @@ We omit the full set of values for brevity and only list a few examples. (Please
 \end{table}
 
 
-\textbf{Dataset}\\
+\textbf{Dataset}
 \label{chap6:sec:dataset}
 
-Based on the definition in Section \ref{chap6:sec:form}, we create a large-scale dataset called \textit{MGConvRex}.
+Based on the definition in Chapter \ref{chap6:sec:form}, we create a large-scale dataset called \textit{MGConvRex}.
 To the best of our knowledge, this is the first dataset for conversational recommendation that is grounded onto structured data of users' profile and items.
-Although curating a dataset for a task-oriented dialogue system may involve building artificial scenarios (a pre-defined setting for collecting a dialogue) \cite{li2016user,li2018microsoft} due to limited access of real-world data for a particular task, conversational recommendation can leverage rich user behaviors that persist in the wild datasets of recommender system.  
-As a result, we first introduce a simple way to create large-scale scenarios for dialogue transcription, as in Sec. \ref{chap6:sec:scenario}.
-Then we set up a Wizard-of-Oz environment \cite{dstc2,woz,multiwoz,multiwoz2.1} to collect dialogues from crowd workers and further annotate transcribed dialogues based on scenarios, as in Sec. \ref{chap6:sec:woz}.
-Our \textit{MGConvRex} can be used for research in almost all crucial components of a dialogue system such as natural language understanding, sentiment analysis, dialogue state tracking, dialogue policy generation, natural language generation, etc.
+Although curating a dataset for a task-oriented dialog system may involve building artificial scenarios (a pre-defined setting for collecting a dialog) \cite{li2016user,li2018microsoft} due to limited access of real-world data for a particular task, conversational recommendation can leverage rich user behaviors that persist in the wild datasets of recommender system.  
+As a result, we first introduce a simple way to create large-scale scenarios for dialog transcription, as in Chapter \ref{chap6:sec:scenario}.
+Then we set up a Wizard-of-Oz environment \cite{dstc2,woz,multiwoz,multiwoz2.1} to collect dialogs from crowd workers and further annotate transcribed dialogs based on scenarios, as in Chapter \ref{chap6:sec:woz}.
+Our \textit{MGConvRex} can be used for research in almost all crucial components of a dialog system such as natural language understanding, sentiment analysis, dialog state tracking, dialog policy generation, natural language generation, etc.
 
-\textbf{Scenario Generation}\\
+\textbf{Scenario Generation}
 \label{chap6:sec:scenario}
-A scenario is a pre-defined user-agent setting to collect a dialogue between two crowd workers, where one plays the user and the other plays the agent.
+
+A scenario is a pre-defined user-agent setting to collect a dialog between two crowd workers, where one plays the user and the other plays the agent.
 Let $\mathbb{B}=\{0, 1\}$ be a binary number.
 We define a scenario consisting of the following parts: $(e_u, C, H, V, P, \mathcal{T} )$, where $e_u$ is a user, $C \in \mathbb{B}^{\vert \mathcal{C} \vert \times \vert \mathcal{V} \vert}$ means the candidate items $\mathcal{C}$ and their associated values $\mathcal{V}$, $H \in \mathbb{B}^{\vert \mathcal{H} \vert \times \vert \mathcal{V} \vert}$ is about visited items $\mathcal{H}$ and their values user $e_u$ has been to and known to the agent, $V \in \mathbb{B}^{\vert \mathcal{V} \vert \times \vert \mathcal{S} \vert}$ indicates values with their associated slots, $P \in \mathbb{B}^{\vert \mathcal{S} \vert \times \vert \mathcal{V} \vert} $ is the user preference (which value the user prefer for a slot) and $\mathcal{T} \subset \mathcal{C}$ is the ground-truth items. 
 Each scenario is constructed in the following way:
@@ -1557,12 +1531,12 @@ Each scenario is constructed in the following way:
     \item For each user $e_u$, create two scenarios: one with \textit{visited items} $\mathcal{H}$ and one without. We keep $\vert \mathcal{H} \vert \in [5, 20]$ visited items to ensure enough statistical information for a user's past history.
 \end{itemize}
 
-\begin{table*}[H]
+\begin{table*}
     \centering
     \scalebox{0.83}{
         \begin{tabular}{l|c|c|c||c|c|c|c}
         \hline
-        \textbf{Dataset} & \multicolumn{3}{c||}{\textbf{All Dialogues}} &  \multicolumn{2}{c|}{\textbf{Dialogues w/ History }} & \multicolumn{2}{c}{\textbf{Dialogues w/o History}} \\
+        \textbf{Dataset} & \multicolumn{3}{c||}{\textbf{All Dialogs}} &  \multicolumn{2}{c|}{\textbf{Dialogs w/ History }} & \multicolumn{2}{c}{\textbf{Dialogs w/o History}} \\
         \hline
          & \# of Dial. & \# of Turns & Avg. \# of Turns & \# of Dial. & Avg. \# of Turns & \# of Dial. & Avg. \# of Turns \\
         \hline
@@ -1577,53 +1551,58 @@ Test & 2078 & 19818 & 9.54 & 982 & 9.45 & 1096 & 9.61 \\
 \label{chap6:tbl:dataset}
 \end{table*}
 
-\textbf{Wizard-of-Oz Collection}\\
+\textbf{Wizard-of-Oz Collection}
 \label{chap6:sec:woz}
+
 We build a wizard-of-oz system to randomly pair two crowd workers to engage in a chat session, where each scenario is split into two parts:
 $(P, \mathcal{T})$ for user and $(e_u, C, H, V)$ for the agent.
 So in each session, the worker playing the user can see a user's preference $P$ and ground-truth items $\mathcal{T}$. 
 The worker playing the agent can only see candidate items $C$ and the user's visited items $H$ (if a scenario contains that).
 The user can tell the agent information from preference $P$ via utterance or check whether recommended items $e_i \in \mathcal{T}$ and reply to agent accordingly (they are not allowed to tell the ground-truth directly). 
-The job of a worker playing the agent is trying to guess the ground-truth item $e_t \in \mathcal{T}$, based on the values of the available candidate items $C$, the current preference collected from the user via dialogue, and optionally the user's visited items $H$.
+The job of a worker playing the agent is trying to guess the ground-truth item $e_t \in \mathcal{T}$, based on the values of the available candidate items $C$, the current preference collected from the user via dialog, and optionally the user's visited items $H$.
 As a result, the goal of a conversation is like a game between the user and the agent, where the agent needs to guess the user's current preference and find the ground-truth item.
 The collected behavior from the agent side reflects human-level intelligence of reasoning over candidate items for recommendation.
-After transcribing a dialogue, we further ask the workers to rate the whole dialogue and each other's work, where
-dialogues with ratings lower than 4 are filtered out.
-Lastly, we annotate dialogue acts, items, slots, values and users' utterance-level and entity-level sentiment for each turn of dialogues.
+After transcribing a dialog, we further ask the workers to rate the whole dialog and each other's work, where
+dialogs with ratings lower than 4 are filtered out.
+Lastly, we annotate dialog acts, items, slots, values and users' utterance-level and entity-level sentiment for each turn of dialogs.
 The guidelines, screenshots of the Wizard-of-Oz UI can be found in the Appendix.
 
 \noindent \textbf{Summary of \textbf{MGConvRex}}:
 \label{sec:dataset_stat}
-After annotation, we split the dialogues by their associated scenarios into training, development and test sets.
+After annotation, we split the dialogs by their associated scenarios into training, development and test sets.
 Note that we enforce all sets to have no overlapping on users so that the training cannot carry the knowledge from any particular user into testing.
-The statistics of MGConvRex can be seen in Table \ref{chap6:tbl:dataset}.
+The statistics of MGConvRex can be seen in \ref{chap6:tbl:dataset}.
 
-\textbf{Results}\\
+\textbf{Experimental Framework}
+
+While there exist many frameworks for task-oriented dialog systems \cite{li2016user,li2018microsoft,lee2019convlab} due to its popularity,
+to the best of our knowledge, there's no existing framework for conversational recommendation.
+Hence we first develop a new framework for training, offline and online evaluation of supervised (imitation) learning and reinforcement learning agents.
+One key component of our framework is the rule-based user simulator, which can be served for both evaluation and training of reinforcement learning agent.
+
+\textbf{Results}
 \label{chap6:sec:exp}
 
-\textbf{Experimental Framework}\\
-While there exist many frameworks for task-oriented dialogue systems \cite{li2016user,li2018microsoft,lee2019convlab} due to its popularity,
-to the best of our knowledge, there's no existing framework for conversational recommendation.
-Hence we first develop a new framework  \footnote{We will release the code along with baselines for future research.} for training, offline and online evaluation of supervised (imitation) learning and reinforcement learning agents.
-One key component of our framework is the rule-based user simulator, which can be served for both evaluation and training of reinforcement learning agent\footnote{The the user simulator is detailed in Appendix.}.
+\textbf{Evaluation Metrics}
 
-\textbf{Evaluation Metrics}\\
-We propose the following metrics to evaluate UMGR over the MGConvRex dataset both offline (against the collected dialogues) and online (against user simulator).
+We propose the following metrics to evaluate UMGR over the MGConvRex dataset both offline (against the collected dialogs) and online (against user simulator).
 
-\textbf{Offline metrics}\\
-We report the following metrics to evaluate the model's performance on dialog acts prediction, turn-level prediction over entities (items, slots, and values), and dialogue-level item prediction.
+\textbf{Offline metrics}
+
+We report the following metrics to evaluate the model's performance on dialog acts prediction, turn-level prediction over entities (items, slots, and values), and dialog-level item prediction.
 
 \noindent \textbf{Act Accuracy \& F1} are reported for all dialog acts against turns in the testing set.
 
-\noindent \textbf{Entity Matching Rate (EMR, k@1, 3, 5)} (Turn-level): these metrics measure the predicted top-$k$ entities against the annotated test dialogues. 
-Note that the types of predicted entities (items, slots or values) depend on the predicted dialogue acts $\hat{y}^\mathcal{A}$, so correctly predicted entities must have correctly predicted dialogue acts first.
+\noindent \textbf{Entity Matching Rate (EMR, k@1, 3, 5)} (Turn-level): these metrics measure the predicted top-$k$ entities against the annotated test dialogs. 
+Note that the types of predicted entities (items, slots or values) depend on the predicted dialog acts $\hat{y}^\mathcal{A}$, so correctly predicted entities must have correctly predicted dialog acts first.
 
-\noindent \textbf{Item Matching Rate (IMR)} (Dialog-level): this measures all predicted items in a dialogue against the ground-truth item $e_t$.
+\noindent \textbf{Item Matching Rate (IMR)} (Dialog-level): this measures all predicted items in a dialog against the ground-truth item $e_t$.
 
-\textbf{Online metrics}\\
-In addition to offline evaluation, we report the following online metric against the user simulator to dynamically test the performance of recommendation. This mitigates an assumption in offline metrics that all past turns (from the human-annotated dialogues) are correct, which limits the interactive evaluation of conversations.
+\textbf{Online metrics}
 
-\noindent \textbf{Success Rate}: tracks whether the interaction with user simulators yields the ground-truth item $e_t$. We use the scenarios from the same test-set dialogues used for the offline evaluation. The maximum number of turns is simulated as 11.
+In addition to offline evaluation, we report the following online metric against the user simulator to dynamically test the performance of recommendation. This mitigates an assumption in offline metrics that all past turns (from the human-annotated dialogs) are correct, which limits the interactive evaluation of conversations.
+
+\noindent \textbf{Success Rate}: tracks whether the interaction with user simulators yields the ground-truth item $e_t$. We use the scenarios from the same test-set dialogs used for the offline evaluation. The maximum number of turns is simulated as 11.
 
 \begin{table*}[!t]
     \centering
@@ -1658,51 +1637,53 @@ UMGR w/o History & 0.6146 & 0.4575 & 0.0597 & 0.1546 & 0.2498 & 0.1122 & 0.1032 
         \end{tabular}
     }
     \vspace{-2pt}
-    %\caption{Results of both offline and online evaluation: EMR stands for entity matching rate, which compares all types of predicted entities against annotated ones when the dialogue act is predicted correctly; IMR stands for item matching rate, which evaluates predicted items against the ground-truth item across all turns.}     
+    %\caption{Results of both offline and online evaluation: EMR stands for entity matching rate, which compares all types of predicted entities against annotated ones when the dialog act is predicted correctly; IMR stands for item matching rate, which evaluates predicted items against the ground-truth item across all turns.}     
     \caption{Results of UMGR}     
     \vspace{-12pt}
 \label{chap6:tbl:result}
 \end{table*}
 
-\textbf{Compared Methods}\\
+\textbf{Compared Methods}
+
 Our framework implements the following methods:\\
-\noindent \textbf{RandomAgent}: As a baseline, we implement an agent that randomly picks a dialogue act and randomly pick a candidate item/slot/value to fill the current response to the user.\\
+\noindent \textbf{RandomAgent}: As a baseline, we implement an agent that randomly picks a dialog act and randomly pick a candidate item/slot/value to fill the current response to the user.\\
 \noindent \textbf{RecAgent}: The agent always chooses \textit{Recommendation} as the dialog act to enact and select a random item that has not been tried from candidate items. This leads to sub-optimal performance as it does not use or collect user preferences.\\
 \noindent \textbf{Pretrained Embeddings}: 
 We pre-train the graph embeddings for all entities and relations from the MG across all scenarios in the training set using the TransE-based graph prediction approaches \cite{Nickel+15}.
 We utilize these for prediction of the future item/slot/value without having the R-GCN layers.
-While this approach is widely used in the related literature and carries cross-scenario knowledge, we show that using pre-trained graph embedding alone is sub-optimal for a particular user and that the dialogue policy needs to perform dynamic reasoning over the user memory graph.\\
-\noindent \textbf{UMGR} (\textbf{Proposed}): This is the proposed R-GCN based model. We choose the batch size to be 32, all hidden states to be size 64. The number of maximum dialogue acts is set to 10. We use 5 layers of R-GCN based on validation on the development set. $\alpha, \beta, \gamma$ are set as 10, 10, 100 based on the scales of losses of different types, respectively. 
+While this approach is widely used in the related literature and carries cross-scenario knowledge, we show that using pre-trained graph embedding alone is sub-optimal for a particular user and that the dialog policy needs to perform dynamic reasoning over the user memory graph.\\
+\noindent \textbf{UMGR} (\textbf{Proposed}): This is the proposed R-GCN based model. We choose the batch size to be 32, all hidden states to be size 64. The number of maximum dialog acts is set to 10. We use 5 layers of R-GCN based on validation on the development set. $\alpha, \beta, \gamma$ are set as 10, 10, 100 based on the scales of losses of different types, respectively. 
 % \todo{check missing hyperparameters} 
 We further conduct the following ablation studies.\\
-\noindent \textbf{- No Dialog Acts}: this study removes the dialogue acts encoder, demonstrating the importance of the dialogue acts in policy generation.
+\noindent \textbf{- No Dialog Acts}: this study removes the dialog acts encoder, demonstrating the importance of the dialog acts in policy generation.
 
-\noindent \textbf{- Prev. User Act Only}: this study only uses the most recent dialogue act from the user. We use this to show how many past dialogue acts are needed for good policy generation.
+\noindent \textbf{- Prev. User Act Only}: this study only uses the most recent dialog act from the user. We use this to show how many past dialog acts are needed for good policy generation.
 
-\noindent \textbf{- Static $\mathcal{G}$}: uses the initial user memory graph without making any updates during the conversation. We use this study to demonstrate that dynamic update of the user memory graph is crucial for reasoning better dialogue policy.\\
+\noindent \textbf{- Static $\mathcal{G}$}: uses the initial user memory graph without making any updates during the conversation. We use this study to demonstrate that dynamic update of the user memory graph is crucial for reasoning better dialog policy.\\
 
-\noindent \textbf{- w/ History} v.s. \textbf{- w/o History}: analyzes the effect of the history of visited items $\mathcal{H}$ (the last two dataset folds in Table \ref{chap6:tbl:dataset}). We use these two baselines to demonstrate that prior knowledge of user memory history aids in predicting dialogue policy.
+\noindent \textbf{- w/ History} v.s. \textbf{- w/o History}: analyzes the effect of the history of visited items $\mathcal{H}$ (the last two dataset folds in \ref{chap6:tbl:dataset}). We use these two baselines to demonstrate that prior knowledge of user memory history aids in predicting dialog policy.
 
 
-\textbf{Results}\\
-The results are shown in Table \ref{chap6:tbl:result}. From the results, we can see that UMGR achieves good performance for most of the metrics.
+\textbf{Result Analysis}
+
+The results are shown in \ref{chap6:tbl:result}. From the results, we can see that UMGR achieves good performance for most of the metrics.
 %\todo{we didn't talk about a rule-based agent I think it's fine. agreed} 
 
 \noindent \textbf{UMGR} is effective in leveraging knowledge in the user memory graph.
-While the UMGR model already achieves reasonable accuracy in dialogue policy prediction relying just on the user memory graph (\textit{-No Dialogue Acts}),
-adding previous dialogue act from the user (\textit{- Prev. User Act Only}) significantly improves the performance.
+While the UMGR model already achieves reasonable accuracy in dialog policy prediction relying just on the user memory graph (\textit{-No Dialogue Acts}),
+adding previous dialog act from the user (\textit{- Prev. User Act Only}) significantly improves the performance.
 %The competitive performance with (\textit{- Prev. User Act Only}) indicates that a good amount of user knowledge is contained in the user memory graph, without having to resort much to previous turns.
 Lastly, we show that keeping user memory graph updated is crucial, as seen in \textit{static $\mathcal{G}$} not providing good rankings for entities.  
 
-\noindent \textbf{UMGR vs. Pre-trained Graph Embeddings}. We confirm that the static pre-trained graph embeddings provide limited capacity for reasoning over a large-graph across multiple scenarios to learn user-specific dialogue policy, leading to poor performance in the recommendation.
+\noindent \textbf{UMGR vs. Pre-trained Graph Embeddings}. We confirm that the static pre-trained graph embeddings provide limited capacity for reasoning over a large-graph across multiple scenarios to learn user-specific dialog policy, leading to poor performance in the recommendation.
 
 \noindent \textbf{w/ \textit{vs} w/o Hisory}. Lastly, the contrasting results for with and without visited items $\mathcal{H}$ in a user memory graph indicate that having more knowledge about a user's experience is important in conversational recommendation.
 
-\textbf{Conclusion}:
-We build a conversational recommendation system that can collect and maintain a user's up-to-date needs and preferences for the recommendation.
+%\textbf{Conclusion}:
+%We build a conversational recommendation system that can collect and maintain a user's up-to-date needs and preferences for the recommendation.
 We release a novel dataset with \textit{user memory graph} grounding based on scenarios generated from the behaviors of real-world users.
 The user memory graph has the benefits of both accumulating pieces of knowledge about a user and interpretability.
-Experimental results on our R-GCN based reasoning model (UMGR) show promising results for dialogue acts, items, slots, and values prediction.
+Experimental results on our R-GCN based reasoning model (UMGR) show promising results for dialog acts, items, slots, and values prediction.
 
 \chapter{Conclusion}
 The paradigm of lifelong learning is essential for learning beyond the classic deep learning approach.
