@@ -47,12 +47,12 @@ We aim to cover major types of machine learning tasks in NLP and provide its app
 To make a more clear distinction between different forms of learning tasks and NLP applications, this dissertation is organized by separating lifelong learning tasks and NLP applications and avoid following the structure of each original publication.
 
 
-I first address open-world learning problems on classification tasks in \ref{chap2:open}, where traditional classifiers can easily make mistakes on unseen classes that appear during testing or inference. 
+I first address open-world learning problems on classification tasks in Chapter \ref{chap2:open}, where traditional classifiers can easily make mistakes on unseen classes that appear during testing or inference. 
 This is because most existing classifiers must classify an example from an unseen class to one of existing pre-defined classes during training. 
 I further extend this problem to a dynamic classification task, where some unseen classes can be added to or removed from the set of existing classes while still keeping rejecting the rest unseen classes. We use a meta-learning approach to address this problem into a very general comparison-based classifier.
 As a result, it avoids learning a classifier overfitting to a particular set of classes.
 
-In chapter \ref{chap3:word}, I switch to classic representation learning problems in NLP.
+In Chapter \ref{chap3:word}, I switch to classic representation learning problems in NLP.
 I first focus on learning word embedding and propose a problem of learning domain word embeddings.
 In this problem, each word has its domain representation.
 However, emerging domains typically do not have enough corpus to train fully-fledged embeddings.
@@ -60,7 +60,7 @@ By applying lifelong learning into word embeddings, I allow corpus-level sharing
 As such, I first describe how to obtain domain-specific word embeddings from a small domain corpus in a lifelong learning fashion and show the performance domain-specific embeddings compare to general-purpose embeddings.
 Second, I explore the usage of domain-specific word embeddings and focus on how to leverage both general-purpose embeddings and domain-specific embeddings together.
 
-In \ref{chap4:context}, I switch to contextualized word representation, where each word is strongly tied to its context in a document.
+In Chapter \ref{chap4:context}, I switch to contextualized word representation, where each word is strongly tied to its context in a document.
 This yields a better representation of the meaning of a word in a sentence or paragraph.
 Given the expensive training of contextualized word representation, I switch to a different style of lifelong learning and focuses on how to obtain domain contextualized word representation via a sequence of different types of learning tasks.
 I discuss two types of learning tasks: post-training and pre-tuning.
@@ -70,25 +70,27 @@ Pre-tuning, on the other hand, aims to solve the discrepancy between a pre-train
 Given existing pre-trained models aim to cover a wide range of end-tasks, the learned representation is not optimal for each end task.
 The proposed pre-tuning task mimics the formulation of an end task with only unlabeled data, which shortens the gap between a pre-trained model and an end task.
 
-Further, \ref{chap5:graph}, I move towards graph representation learning.
+Further, in Chapter \ref{chap5:graph}, I move towards graph representation learning.
 A graph is a natural way for sharable and interpretable knowledge for humans.
 It can be used for both feature augmentations and reasoning.
 However, the existing approach of graph representation learning mostly assumes a static graph, where the knowledge and reasoning upon knowledge are never changed.
 Lifelong learning is ideal for graph reasoning as it can keep updating graphs and reasoning policy.
 Thus, we rename the term graph as memory graph, indicating the graph is dynamic that can maintain and update reasoning based on newly added knowledge.
 
-Lastly, in \ref{chap6:nlp}, I target the usage of lifelong learning over a wide spectrum of NLP tasks.
-I first describe the task in text classification, including product classification (using methods in \ref{chap2:open}) and review classification (using methods in \ref{chap3:word}).
+Lastly, in Chapter \ref{chap6:nlp}, I target the usage of lifelong learning over a wide spectrum of NLP tasks.
+I first describe the task in text classification, including product classification (using methods in Chapter \ref{chap2:open}) and review classification (using methods in Chapter \ref{chap3:word}).
 Then I focus on tasks in aspect-based sentiment analysis (ABSA).
-I first describe the usage of domain word embeddings (from \ref{chap3:word}) and contextualized word representation (from \ref{chap4:context}) for aspect extraction.
+I first describe the usage of domain word embeddings (from Chapter \ref{chap3:word}) and contextualized word representation (from Chapter \ref{chap4:context}) for aspect extraction.
 Later I discuss the contextualized word representation and the lifelong training algorithm of hard examples for aspect sentiment classification.
 Next, I go through the question-answering problem and focus on machine reading comprehension (MRC) and its novel application to reviews.
 Lastly, I discuss the usage of lifelong learning for conversational AI. 
 I first describe the usage of pre-tuning for conversational review reading comprehension (CRC).
-Then focus on lifelong graph reasoning for conversational recommendation with dynamic graph reasoning (using the method in \ref{chap5:graph}).
+Then focus on lifelong graph reasoning for conversational recommendation with dynamic graph reasoning (using the method in Chapter \ref{chap5:graph}).
 
 \chapter{Lifelong Classification}
 \label{chap2:open}
+
+The content of this chapter was previously published as ``Open-world Learning and Application to Product Classification'' in WWW 2019 \cite{xu2019open}, DOI: https://doi.org/10.1145/3308558.3313644, with an arXiv version \footnote{https://arxiv.org/abs/1809.06004} \cite{xu2018open}.
 
 Classification is a well-known and classic problem and the deep learning variant of the classification task typically leverages an activation function that can compute a categorical distribution over a set of classes (e.g., the softmax function).
 This type of classification is called \textit{closed-world classification} because the classes seen in testing must have appeared in training. However, this assumption is often violated in real-world applications. For example, new topics often emerge on a social media site and new categories of products appear daily on e-commerce website. 

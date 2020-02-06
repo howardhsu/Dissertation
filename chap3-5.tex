@@ -2,6 +2,8 @@
 \chapter{Lifelong Word Representation Learning}
 \label{chap3:word}
 
+The content of this chapter was previously published as ``Lifelong Domain Word Embedding via Meta-Learning'' in IJCAI 2019 \cite{xumeta} with an arXiv version \footnote{https://arxiv.org/abs/1805.09991} \cite{xu2018lifelong}, and partially as ``Double Embeddings and CNN-based Sequence Labeling for Aspect Extraction'' in ACL 2018 \cite{xu_acl2018} (DOI: http://dx.doi.org/10.18653/v1/P18-2094, with arXiv version \footnote{https://arxiv.org/abs/1805.04601} \cite{xu2018double}).
+
 Learning word embeddings \cite{mnih2007three,mikolov2013efficient,mikolov2013distributed,pennington2014glove}
 has received a great deal of attention due to its success in numerous NLP applications, e.g., named entity recognition \cite{sienvcnik2015adapting}, sentiment analysis \cite{maas2011learning} and syntactic parsing \cite{durrett2015neural}.
 The key to the success of word embeddings is that a large-scale corpus can be turned into a huge number (e.g., billions) of training examples.
@@ -53,7 +55,7 @@ Many earlier methods used complex neural networks \cite{mikolov2013linguistic}.
 More recently, a simple and effective unsupervised model called skip-gram (or word2vec in general) \cite{mikolov2013distributed,mikolov2013linguistic} was proposed to turn a plain text corpus into large-scale training examples without any human annotation.
 It uses the current word to predict the surrounding words in a context window.
 The learned weights for each word are the embedding of that word.
-Although some embeddings trained using large scale corpora are available \cite{pennington2014glove,bojanowski2016enriching}, they are often sub-optimal for domain-specific tasks \cite{bollegala-maehara-kawarabayashi:2015:ACL-IJCNLP,yang-lu-zheng:2017:EMNLP2017,xu:Short,Xu2018pro}. 
+Although some embeddings trained using large scale corpora are available \cite{pennington2014glove,bojanowski2016enriching}, they are often sub-optimal for domain-specific tasks \cite{bollegala-maehara-kawarabayashi:2015:ACL-IJCNLP,yang-lu-zheng:2017:EMNLP2017,xu_acl2018,Xu2018pro}. 
 However, a single domain corpus is often too small for training high-quality embeddings \cite{Xu2018pro}.
 
 Our problem setting is related to \textit{Lifelong Learning} (LL). Much of the work on LL focused on supervised learning \cite{Thrun1996learning,Silver2013,ChenLiu2016}.
@@ -89,7 +91,7 @@ To enable the above operations, we need a knowledge base (KB), which retains the
     \centering    
     \includegraphics[width=5.0in]{fig/ijcai18_ll.png}
         \caption{Overview of L-DEM}
-        \label{fig:fr}
+        \label{chap3:fig:fr}
     \end{figure}
 
 \textbf{Base Meta-Learner}
@@ -173,8 +175,9 @@ In line 5, AdaptMeta-learner adapts or fine-tunes the base meta-learner $\mathca
 A positive tuning example is sampled from two sub-corpora of the new domain $(\mathbf{x}_{w_{i, n+1, 1}}, \mathbf{x}_{w_{i, n+1, 2}})$.
 A negative example is exampled as $(\mathbf{x}_{w_{i, n+1, 1}}, \mathbf{x}_{w_{i, j, 2}})$, where $m+1 \le j \le n$.
 The initial weights of $M_{n+1}$ are set as the trained weights of the base meta-learner $M$. 
- 
-\begin{algorithm*}
+
+\scalebox{0.75}{
+\begin{algorithm}[H]
 \label{chap3:alg:ll}
 \LinesNumbered
 \DontPrintSemicolon
@@ -205,7 +208,8 @@ $\mathcal{A} \gets \emptyset$ \;
 
 $\mathcal{K}_{n+1} \gets (V_{n+1}, C_{n+1}, E_{n+1}) $ \;
 \Return{ $\mathcal{A}$}
-\end{algorithm*}
+\end{algorithm}
+}
 
 \textbf{Retriving Relevant Past Knowledge}
 
@@ -450,6 +454,8 @@ Note the ideal LL setting is to perform L-DEM on all domain corpora of the pre-t
 \chapter{Lifelong Contextualized Representation Learning}
 \label{chap4:context}
 
+The part of this chapter was previously published as ``BERT Post-Training for Review Reading Comprehension and Aspect-based Sentiment Analysis'' in NAACL 2019 \cite{xu2019bert}, DOI: http://dx.doi.org/10.18653/v1/N19-1242, with an arXiv version \footnote{https://arxiv.org/1904.02232} \cite{xu2019bert_arxiv}, together with an arXiv paper ``Review Conversational Reading Comprehension'' \footnote{https://arxiv.org/abs/1902.00821} \cite{xu2019review}.
+
 Beyond word embeddings that only carry independent word-level features, the meaning (thus features or representations) of a word is also heavily affected by its contexts.
 As a result, a good representation for an end task may not be only from a word embedding layer, but also from an encoder $E(x)$ that can consume a piece of text and provide representations for each word based on its nearby context in that sequence.
 To learn such an encoder $E(x)$, researchers need to define a general proxy task that is close to almost all end tasks so to learn features for those end tasks.
@@ -528,7 +534,8 @@ As a result, the joint loss of post-training is defined as $\mathcal{L}=\mathcal
 One major issue of post-training on such a loss is the prohibitive cost of GPU memory usage.
 Instead of updating parameters over a batch, we divide a batch into multiple sub-batches and accumulate gradients on those sub-batches before parameter updates. This allows for a smaller sub-batch to be consumed in each iteration.
 
-\begin{algorithm}[t]
+\scalebox{0.7}{
+\begin{algorithm}[H]
 \label{chap4:alg:post-training}
 \LinesNumbered
 \DontPrintSemicolon
@@ -545,6 +552,7 @@ $\{\mathcal{D}_{\text{MRC}, 1}, \dots, \mathcal{D}_{\text{MRC}, u} \} \gets \tex
 }
 $\Theta \gets \text{ParameterUpdates}(\nabla_\Theta \mathcal{L}) $ \;
 \end{algorithm}
+}
 
 Algorithm 1 describes one training step and takes one batch of data on domain knowledge (DK) $\mathcal{D}_\text{DK}$ and one batch of MRC training data $\mathcal{D}_\text{MRC}$ to update the parameters $\Theta$ of BERT.
 In line 1, it first initializes the gradients $\nabla_\Theta$ of all parameters as 0 to prepare gradient computation. Then in lines 2 and 3, each batch of training data is split into $u$ sub-batches. Lines 4-7 spread the calculation of gradients to $u$ iterations, where the data from each iteration of sub-batches are supposed to be able to fit into GPU memory.
@@ -563,7 +571,7 @@ The overall illustrations of the formulation are depicted in \ref{chap6:fig:over
 
 \begin{figure}
 \centering
-\includegraphics[width=5.5in]{fig/naacl19_overview.png}
+\includegraphics[width=5.in]{fig/naacl19_overview.png}
     \caption{BERT for end tasks}
 \label{chap6:fig:overview}
 \vspace{-3mm}
@@ -646,7 +654,8 @@ We propose a pre-tuning stage that can enhance the understanding of the input/ou
 We first formulate the data for pre-tuning that aims to address the understanding of the textual format.
 As we have no annotated data except the limited $(\text{RC})_2$ data, we harvest domain QA pairs and reviews, which are typically organized under an entity (a laptop or a restaurant). The QA pairs and reviews are combined to produce the pre-tuning examples. The process is given in Algorithm \ref{chap4:alg:pre-tuning}.
 
-\begin{algorithm}[t]
+\scalebox{0.75}{
+\begin{algorithm}[H]
     \label{chap4:alg:pre-tuning}
     \LinesNumbered
     \DontPrintSemicolon
@@ -684,6 +693,7 @@ As we have no annotated data except the limited $(\text{RC})_2$ data, we harvest
         $\mathcal{T} \gets \mathcal{T} + (x, (u, v) )$ \;
     }
 \end{algorithm}
+}
 
 The inputs to Algorithm \ref{chap4:alg:pre-tuning} are a set of QA pairs and a set of reviews belonging to the same entity and the maximum number of turns in the context. The output is the pre-tuning data, which is initialized in Line 1. 
 Each example is denoted as $(x, (u, v))$, where $x$ is the input example and $(u, v)$ indicates the boundary (starting and ending indexes) of an answer for the auxiliary objective (discussed in the next section).

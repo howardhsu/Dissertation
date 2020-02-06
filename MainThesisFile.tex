@@ -23,6 +23,7 @@
 \usepackage{float}
 \usepackage{textcomp}
 \usepackage{amsthm}
+\usepackage[final]{pdfpages}
 
 \usepackage{csquotes}
 \usepackage{array}
@@ -118,12 +119,11 @@
 
 \acknowledgements
 {First and foremost, I would like to express my sincere gratitude to my Ph.D. advisors, Prof. Philip
-S. Yu and Prof. Bing Liu, for their guidance and support throughout my Ph.D. study and research. It has been my privilege
-to work with you at different aspects of my Ph.D. journey. Your invaluable suggestions, guidance and
-your passion for research not only help me with my past academic achievements but also will influence
+S. Yu and Prof. Bing Liu, for their guidance and support throughout my Ph.D. study and research. 
+It has been my privilege to work with you at different aspects of my Ph.D. journey. 
+Your invaluable suggestions, guidance and your passion for research not only help me with my past academic achievements but also will influence
 my professional career in the future.
-Besides my advisors, I would like to thank 
-Prof. Piotr Gmytrasiewicz and Prof. Natalie Parde, for your valuable time on my dissertation.
+Besides my advisors, I would like to thank Prof. Piotr Gmytrasiewicz and Prof. Natalie Parde, for your valuable time on my dissertation.
 I am grateful to Prof. Sihong Xie from Lehigh University, for the mentorship and support of my early years of a research career and enlightening me on the first glance of research. 
 Last but not least, none of this could have happened without my family. I am grateful for my parents, for their unconditional love, support and encouragement of my Ph.D. study.\\
 
@@ -141,7 +141,7 @@ Last but not least, none of this could have happened without my family. I am gra
     \setlength{\labelsep}{.5in}
     \setlength{\rightmargin}{\leftmargin}}
 \item[LL\hfill] Lifelong Learning
-\item[CNN\hfill] Converlutional Neural Network
+\item[CNN\hfill] Convolutional Neural Network
 \item[BERT\hfill] Bidirectional Encoder Representations from Transformers
 \item[AE\hfill] Aspect Extraction
 \item[ASC\hfill] Aspect Sentiment Classification
@@ -163,13 +163,42 @@ Last but not least, none of this could have happened without my family. I am gra
 \newpage
 \appendix
 
+\includepdf[pages=-,pagecommand={},width=\textwidth]{copyright/acl.pdf}
+
+
+\newpage
+\textbf{ACM Copyright}\footnote{\url{https://authors.acm.org/author-services/author-rights}}\\
+\includegraphics[width=5.5in]{copyright/acm.pdf}
+
+\includepdf[pages=-,pagecommand={},width=\textwidth]{copyright/ieee.pdf}
+
+\includepdf[pages=-,pagecommand={},width=\textwidth]{copyright/arxiv.pdf}
+
+
+\newpage
+\noindent \textbf{IJCAI Copyright Letter}\\
+Returned Rights\\
+In return for these rights, IJCAI hereby grants to the above authors, and the employers for whom the work was performed, royalty-free permission to:\\
+1. retain all proprietary rights (such as patent rights) other than copyright and the publication rights transferred to IJCAI;\\
+2. personally reuse all or portions of the paper in other works of their own authorship;\\
+3. make oral presentation of the material in any forum;\\
+4. reproduce, or have reproduced, the above paper for the author’s personal use, or for company use provided that IJCAI copyright
+and the source are indicated, and that the copies are not used in a way that implies IJCAI endorsement of a product or service of an
+employer, and that the copies per se are not offered for sale. The foregoing right shall not permit the posting of the paper in electronic or digital form on any computer network, except by the author or the author’s employer, and then only on the author’s or the employer’s own World Wide Web page or ftp site. Such Web page or ftp site, in addition to the aforementioned requirements of this Paragraph,
+must provide an electronic reference or link back to the IJCAI electronic server (\url{http://www.ijcai.org}), and shall not post other IJCAI
+copyrighted materials not of the author’s or the employer’s creation (including tables of contents with links to other papers) without
+IJCAI’s written permission;\\
+5. make limited distribution of all or portions of the above paper prior to publication.\\
+6. In the case of work performed under U.S. Government contract, IJCAI grants the U.S. Government royalty-free permission to reproduce all or portions of the above paper, and to authorize others to do so, for U.S. Government purposes. In the event the above paper is not
+accepted and published by IJCAI, or is withdrawn by the author(s) before acceptance by IJCAI, this agreement becomes null and void.
+
 \bibformb
 \bibliography{BibFile}
 
 \newpage
 % \vita
 % This is where the vita goes.  Its organization is left as an exercise.
-%\clearpage
+\clearpage
 \pagestyle{pageontop}
 \thispagestyle{pageonbottom}
 %\vspace*{3in}
