@@ -111,23 +111,58 @@
 
 \title{Lifelong Representation Learning for NLP Applications}
 \author{Hu Xu}
-\pdegrees{}
+\pdegrees{B.S. China Agricultural University, 2005\\
+M.E. Peking University, 2009
+}
 \degree{Doctor of Philosophy in Computer Science}
 \committee{Prof. Philip S. Yu, Chair and Advisor \\ Prof. Bing Liu, Co-advisor \\Prof. Piotr Gmytrasiewicz \\ Prof. Natalie Parde \\Prof. Sihong Xie, Department of Computer Science and Engineering, Lehigh University}
 \maketitle
 
 
 \acknowledgements
-{First and foremost, I would like to express my sincere gratitude to my Ph.D. advisors, Prof. Philip
-S. Yu and Prof. Bing Liu, for their guidance and support throughout my Ph.D. study and research. 
+{First, my gratitude and appreciation give to my Ph.D. advisors, Prof. Philip
+S. Yu and co-advisor Prof. Bing Liu, for their guidance and support throughout my Ph.D. study and research. 
 It has been my privilege to work with you at different aspects of my Ph.D. journey. 
 Your invaluable suggestions, guidance and your passion for research not only help me with my past academic achievements but also will influence
 my professional career in the future.
 Besides my advisors, I would like to thank Prof. Piotr Gmytrasiewicz and Prof. Natalie Parde, for your valuable time on my dissertation.
 I am grateful to Prof. Sihong Xie from Lehigh University, for the mentorship and support of my early years of a research career and enlightening me on the first glance of research. 
-Last but not least, none of this could have happened without my family. I am grateful for my parents, for their unconditional love, support and encouragement of my Ph.D. study.\\
 
+I would like to also thank collaborators and lab mates both inside and outside UIC during this Ph.D. journey.
+I would like to thank Lei Shu for long-term collaboration, including idea brainstorming, modeling, and support for each paper.
+I would also like to thank Prof. Kevin Gimpel from Toyota Technological Institute at Chicago for external collaboration.
+Also, I would like to appreciate numerous researchers from the research community around the world. 
+Your feedback and support on my research really motivate my future steps of exploring the unknown world of natural language processing. 
+
+I have 3 wonderful summer internships for NLP research. I am lucky to be mentored by research scientists from the industry. The industry-strength research really helps me to broaden my views on practical problems and deployments of machine learning models.
+I would like to thank Dr. Cheng Niu and Dr. Xiliang Zhong from WeChat AI lab, Prof. Katrin Kirchhoff from Amazon AI and University of Washington, Prof. Mona Diab from Amazon AI and George Washington University, Dr. Honglei Liu, Dr. Shane Moon, Dr. Bing Liu, Pararth Shah, Dr. Rajen Subba, Dr. Alborz Geramifard from Facebook Conversational AI.
+Meanwhile, I would also like to thank the organizers of the Yelp dataset challenge, such as Dr. Sebastien Couvidat, etc. for their supports of datasets and awards on my research.
+
+Last but not least, none of this could have happened without my family. I am very grateful for my parents on their long-term support and encouragement of my Ph.D. research and unconditional love.\\
 \begin{flushright}HX\end{flushright}}
+
+
+\contributionofauthors
+{Chapter \ref{chap1:intro} is the overview and motivation for my dissertation.
+
+Chapter \ref{chap2:open} is from the published papers \cite{xu2019open,xu2018open} and I am the primary author. Prof. Bing Liu, Prof. Philip S. Yu, and Lei Shu contributed to discussion and writing. Lei Shu contributed to migrating baselines.
+
+Chapter \ref{chap3:word} is from the published papers \cite{xu2018lifelong,xu2018double}. I am the primary author and Prof. Bing Liu, Prof. Philip S. Yu, and Lei Shu contributed to the discussion. Prof. Bing Liu and Lei Shu contributed to revising.
+
+Chapter \ref{chap4:context} is from the one published paper \cite{xu2019bert} and one arXiv paper \cite{xu2019review}. I am the primary author of both papers and Prof. Philip S. Yu, Prof. Bing Liu and Lei Shu contributed to the discussion. Prof. Bing Liu contributed to paper editing.
+
+Chapter \ref{chap5:graph} is an ongoing work. I will be the primary author. Collaborators from Facebook AI (Dr. Seungwhan (Shane) Moon, Dr. Honglei Liu, Dr. Bing Liu, and Pararth Sha) and Prof. Philip S. Yu and Prof. Bing Liu contributed to the discussion. 
+Dr. Seungwhan (Shane) Moon, Dr. Honglei Liu, Dr. Bing Liu, and Prof. Bing Liu contributed to editing. 
+
+Chapter \ref{chap6:nlp} is about multiple papers for which I am the primary author.
+Section \ref{chap6:sec:sa} is based on published papers \cite{xu2018double,xu2019bert} and arXiv paper \cite{xu2019afailure}. Prof.  Philip S. Yu, Prof. Bing Liu, and Lei Shu contributed to the discussion. 
+Prof. Bing Liu contributed to editing.
+Section 6.2 is from published papers \cite{xu2016CER,xu2017supervised} and Prof. Sihong Xie, Prof. Philip S. Yu, and Lei Shu contributed to the discussion. Prof. Sihong Xie and Prof. Philip S. Yu contributed to editing. Lei Shu contributed to finding baselines.
+Section 6.3-6.4.1 is based on published paper \cite{xu2019bert} and arXiv paper \cite{xu2019review}. Prof. Bing Liu and Lei Shu contributed to the discussion. Prof. Bing Liu contributed to editing.
+Section 6.4.2 is from ongoing work. Collaborators from Facebook AI (Dr. Seungwhan (Shane) Moon, Dr. Honglei Liu, Dr. Bing Liu, and Pararth Sha) contributed to the discussion of data collection. Dr. Seungwhan (Shane) Moon, Dr. Honglei Liu, Dr. Bing Liu, and Prof. Bing Liu contributed to editing. 
+
+Chapter \ref{chap7:conclusion} discussed conclusion and future work.
+}
 
 \tableofcontents
 \listoftables
@@ -141,7 +176,8 @@ Last but not least, none of this could have happened without my family. I am gra
     \setlength{\labelsep}{.5in}
     \setlength{\rightmargin}{\leftmargin}}
 \item[LL\hfill] Lifelong Learning
-\item[CNN\hfill] Convolutional Neural Network
+\item[L2AC\hfill] Learning to Accept new Class framework
+\item[L-DEM\hfill] Lifelong Domain Embedding framework
 \item[BERT\hfill] Bidirectional Encoder Representations from Transformers
 \item[AE\hfill] Aspect Extraction
 \item[ASC\hfill] Aspect Sentiment Classification
@@ -156,15 +192,39 @@ Last but not least, none of this could have happened without my family. I am gra
 
 \include{chap3-5}
 
-\include{chap6}
+\include{chap6_1}
+\include{chap6_2}
+\include{chap6_3}
 
+\chapter{Conclusion}
+\label{chap7:conclusion}
+The combination of deep learning with lifelong learning yields rich directions for NLP researches.
+The paradigm of lifelong learning is essential for learning beyond the classic deep learning approach.
+To make the learning effective in the long-term, an AI agent must be able to adapt to the changes in the world.
+This dissertation explores different forms of lifelong learning tasks, including classification, word embedding, contextualized word embedding, graph reasoning, with their applications in many NLP tasks that require lifelong learning.
+Although the topic covered in this dissertation is rather diverse, the research about lifelong representation learning is still at its initial stage. 
+The research of lifelong learning does not stop just at these formulations presented in this dissertation.
+
+In the future, I expect some sub-directions of lifelong representation learning that are worth for future research.
+\begin{itemize}
+\item Representation space for lifelong learning: 
+Existing hidden space of deep learning is not very lifelong learning-friendly and does not yield certain properties for lifelong learning. 
+This is because all parameters in a deep learning model are equally ``trainable''.
+The hidden space is pretty much decided by random initialization, the order to feeding training examples, the choice of optimizers, etc.
+Moreover, hidden space gets drifted to unknown new space when new knowledge comes in.
+This naturally causes research problems such as catastrophic forgetting and incompatible drifting of hidden space.
+As a result, it is more desirable to re-define the hidden space of the neural network that has better supports of adding new knowledge and keeping existing knowledge; 
+\item Learning to maintain structured data: unlike hidden space, structured data such as knowledge graph yield more stable and extendable properties for lifelong learning. However, it is still not clear how to learn the maintenance of such a knowledge graph. And more importantly, how to correct errors in existing knowledge when the AI agent noticed something that is wrong in future knowledge accumulation;
+\item Meta-learning for lifelong learning: meta-learning is a natural solution to lifelong learning as it aims to learn more abstractive tasks rather than concrete machine learning tasks. As such, meta-learning is not limited to data preprocessing (as in my work on word embedding) or general classifiers (as in my work on open-world learning). The AI agent should automatically design and explore the tasks in the meta-learning space for future use.
+One example is the case of maintaining the knowledge graph.
+\end{itemize}
+I hope to explore these directions in my future research and I also welcome brilliant researchers to join the journey of exploring lifelong representation learning. 
 
 \appendices
 \newpage
 \appendix
 
 \includepdf[pages=-,pagecommand={},width=\textwidth]{copyright/acl.pdf}
-
 
 \newpage
 \textbf{ACM Copyright}\footnote{\url{https://authors.acm.org/author-services/author-rights}}\\
@@ -174,11 +234,10 @@ Last but not least, none of this could have happened without my family. I am gra
 
 \includepdf[pages=-,pagecommand={},width=\textwidth]{copyright/arxiv.pdf}
 
-
 \newpage
 \noindent \textbf{IJCAI Copyright Letter}\\
 Returned Rights\\
-In return for these rights, IJCAI hereby grants to the above authors, and the employers for whom the work was performed, royalty-free permission to:\\
+In return for these rights, IJCAI hereby grants to the above authors, and the employers for whom the work was performed, royalty-free permission to: \\
 1. retain all proprietary rights (such as patent rights) other than copyright and the publication rights transferred to IJCAI;\\
 2. personally reuse all or portions of the paper in other works of their own authorship;\\
 3. make oral presentation of the material in any forum;\\
@@ -193,6 +252,7 @@ IJCAI’s written permission;\\
 accepted and published by IJCAI, or is withdrawn by the author(s) before acceptance by IJCAI, this agreement becomes null and void.
 
 \bibformb
+
 \bibliography{BibFile}
 
 \newpage
@@ -212,14 +272,14 @@ NAME: & Hu Xu  \\
     &\\
 EDUCATION:  &Ph.D., Computer Science, University of Illinois at Chicago, Chicago, Illinois, 2020. \\  
             &\\
-            &M.Eng., Electronics and Communication Engineering, Peking University, Beijing, China, 2009.\\
+            &M.E., Electronics and Communication Engineering, Peking University, Beijing, China, 2009.\\
             &\\
 %            &B.Eng., Computer Engineering, University of Illinois at Chicago, Chicago, Illinois, 20xx.  \\
             &\\
 ACADEMIC EXPERIENCE:  &Research Assistant, Big Data and Social Computing Lab, Department of Computer Science, University of Illinois at Chicago, 2015 - 2020. \\
             &\\
-			&Research Assistant, Social Media and Data Mining Lab, Department of Computer Science, University of Illinois at Chicago, 2017 - 2020. \\
-			&\\
+            &Research Assistant, Social Media and Data Mining Lab, Department of Computer Science, University of Illinois at Chicago, 2017 - 2020. \\
+            &\\
             &Teaching Assistant, Department of Computer Science, University of Illinois at Chicago: \\
             &\squishlist            
             \item Language and Automata, Fall 2015, Spring/Summer/Fall 2016 and Fall 2017.    
@@ -227,5 +287,6 @@ ACADEMIC EXPERIENCE:  &Research Assistant, Big Data and Social Computing Lab, De
             \squishend \\
 
  \end{tabular}
+
 
 \end{document}

@@ -6,28 +6,41 @@ The content of this chapter was previously published as ``Lifelong Domain Word E
 
 Learning word embeddings \cite{mnih2007three,mikolov2013efficient,mikolov2013distributed,pennington2014glove}
 has received a great deal of attention due to its success in numerous NLP applications, e.g., named entity recognition \cite{sienvcnik2015adapting}, sentiment analysis \cite{maas2011learning} and syntactic parsing \cite{durrett2015neural}.
-The key to the success of word embeddings is that a large-scale corpus can be turned into a huge number (e.g., billions) of training examples.
+The key points to the great performance of word embeddings is its capability to leverage a large-scale corpus with statistically general training examples.
 
-There are two implicit assumptions are often made about the effectiveness of embeddings to down-stream tasks: 
-1) the training corpus for embedding is available and much larger than the training data of the down-stream task; 2) the topic (domain) of the embedding corpus is closely aligned with the topic of the downstream task.
-However, many real-life applications do not meet both assumptions.
+There are two assumptions are often made about the effectiveness of embeddings: 
+1) the training corpus is much larger than the training data of the down-stream task; 2) the domain of the embedding corpus is well-aligned with the topic of the downstream task.
+Unfortunately, it is very hard to meet both assumptions in real-world applications.
 
-In most cases, the in-domain corpus is of limited size, which is insufficient for training good embeddings. 
-In applications, researchers and practitioners often simply use some general-purpose embeddings trained using a very large general-purpose corpus (which satisfies the first assumption) covering almost all possible topics, e.g., the GloVe embeddings \cite{pennington2014glove} trained using 840 billion tokens covering almost all topics/domains on the Web. Such embeddings have been shown to work reasonably well in many domain-specific tasks. This is not surprising as the meanings of a word are largely shared across domains and tasks. However, this solution violates the second assumption, which often leads to sub-optimal results for domain-specific tasks, as shown in our experiments.
-One obvious explanation for this is that the general-purpose embeddings do provide some useful information for many words in the domain task, but their embedding representations may not be ideal for the domain and in some cases, they may even conflict with the meanings of the words in the task domain because words often have multiple senses or meanings.
-For example, we have a task in the programming domain, which has the word ``Java''. A large-scale general-purpose corpus, which is very likely to include texts about coffee shops, supermarkets, the Java island of Indonesia, etc., can easily squeeze the room for representing ``Java''' context words like ``function'', ``variable'' or ``Python'' in the programming domain.
-This results in a poor representation of the word ``Java'' for the programming task.  
+In the most common case, the in-domain corpus is of limited size so it is insufficient for training good embeddings. 
+As such, applications often use some general-purpose embeddings trained from a very large general-purpose corpus (which satisfies the first assumption).
+This corpus covers almost all possible topics (for example, the GloVe embeddings \cite{pennington2014glove} uses a corpus of 840 billion tokens, which covers almost all domains on the Web). 
+Such embeddings have been shown to work reasonably well in many tasks, because the meanings of a word are largely shared across domains and tasks. 
+However, this solution violates the second assumption mentioned above.
+As a result, it often leads to sub-optimal results for domain-specific tasks, as shown in our experiments.
+
+One obvious explanation is that the general-purpose embeddings may not be ideal for the domain.
+In some cases, they may even conflict with the meanings of the words in the end task domain.
+This is because words often have multiple senses or meanings.
+As an example of programming domain, if we have the word ``Java'', a large-scale general-purpose corpus is very likely to include texts about supermarkets the Java island of Indonesia or coffee shops etc.
+This main domains can easily squeeze the room for representing ``Java''' corpus from the programming domains such as context words like ``function'', ``variable'' or ``Python''.
+As such, the resulted embeddings have poor representation of the word ``Java'' for the task in programming.  
 
 \section{Motivation}
 \label{chap3:sec:intro}
 
-Thus, learning high-quality domain word embeddings is important for achieving good performance in many NLP tasks. General-purpose embeddings trained on large-scale corpora are often sub-optimal for domain-specific applications. However, domain-specific tasks often do not have large in-domain corpora for training high-quality domain embeddings.
+As discussed, learning domain word embeddings of high-quality is important for many NLP tasks. General-purpose embeddings trained on large-scale corpora are often sub-optimal for domain-specific applications. However, on the other hand, domain-specific tasks often do not have large in-domain corpora for training high-quality domain embeddings.
 
-As such, we propose a novel \textit{lifelong learning} setting for domain embedding. That is, when performing the new domain embedding, the system has seen many past domains, and it tries to expand the new in-domain corpus by exploiting the corpora from the past domains via meta-learning. The proposed meta-learner characterizes the similarities of the contexts of the same word in many domain corpora, which helps retrieve relevant data from the past domains to expand the new domain corpus. 
+As such, I believe the setting of \textit{lifelong learning} is ideal to resolve this issue. 
+We can view domains come in sequence. 
+As a result, when performing the new domain embedding, the system has seen many past domains.
+Although the corpus for the new domain may come of limited sizes, it can try to expand the new in-domain corpus by exploiting the corpora from the past domains. 
 
-To solve this problem and also the limited in-domain corpus size problem, cross-domain embeddings have been investigated \cite{bollegala-maehara-kawarabayashi:2015:ACL-IJCNLP,yang-lu-zheng:2017:EMNLP2017,bollegala2017think} via transfer learning \cite{pan2010survey}.
-These methods allow some in-domain words to leverage the general-purpose embeddings in the hope that the meanings of these words in the general-purpose embeddings do not deviate much from the in-domain meanings of these words. The embeddings of these words can thus be improved. However, these methods cannot improve the embeddings of many other words with domain-specific meanings (e.g., ``Java'').
-Further, some words in the general-purpose embeddings may carry meanings that are different from those in the task domain. 
+There are existing research for cross-domain embeddings \cite{bollegala-maehara-kawarabayashi:2015:ACL-IJCNLP,yang-lu-zheng:2017:EMNLP2017,bollegala2017think} via transfer learning \cite{pan2010survey}.
+These methods allow some in-domain words to leverage general-purpose embeddings.
+It is expected to have the meanings of these words in the general-purpose embeddings do not deviate much from the in-domain meanings of these words. 
+However, these methods cannot improve the embeddings of many other words with domain-specific meanings as discussed above (i.e., ``Java'').
+Further, some words in the general-purpose embeddings may carry meanings that are different from those in the domain. 
 
 This chapter is organized in two sections: we first address the problem of learning word embeddings for a new domain in a lifelong learning setting; then we discuss how to leverage both general and domain-specific embeddings. 
 
@@ -35,17 +48,29 @@ This chapter is organized in two sections: we first address the problem of learn
 
 We propose a novel direction for domain embedding learning by expanding the in-domain corpus. The problem in this new direction can be stated as follows:
 
-\textbf{Problem statement}: We assume that the learning system has seen $n$ domain corpora in the past: $D_{1:n}=\{D_1, \dots, D_n\}$, when a new domain corpus $D_{n+1}$ comes with a certain task, the system automatically generates word embeddings for the $(n+1)$-th domain by leveraging some useful information or knowledge from the past $n$ domains.
+\textbf{Problem statement}: the lifelong learning setting assumes that the agent has seen $n$ domain corpora: $D_{1:n}=\{D_1, \dots, D_n\}$.
+When a new domain corpus $D_{n+1}$ comes with a certain task, the system is expected to learn word embeddings for the $(n+1)$-th domain by utilizing useful knowledge from the past $n$ domains.
+The knowledge learned from the $(n+1)$-th domain will be stored for future use.
 
 This problem definition is in the
 \textit{lifelong learning} (LL) setting, where the new or $(n+1)$-th task is performed with the help of the knowledge accumulated over the past $n$ tasks \cite{ChenLiu2016}. 
 %Silver2013
 The problem does not have to be defined this way with the domains corpora coming sequentially. It will still work as long as we have $n$ existing domain corpora and we can use them to help with our target domain embedding learning, i.e., the $(n+1)$-th domain.
 
-The main challenges of this problem are 2-fold:
-1) how to automatically identify relevant information from the past $n$ domains with no user help, and 2) how to integrate the relevant information into the $(n+1)$-th domain corpus. We propose a meta-learning based system L-DEM (\underline{L}ifelong \underline{D}omain \underline{E}mbedding via \underline{M}eta-learning) to tackle the challenges.
+I summarize the main challenges of this problem is 2-fold.
+First, how to identify relevant information from the past $n$ domains without human help.
+Second how to integrate that information into the $(n+1)$-th domain corpus.
 
-To deal with the first challenge, for a word in the new domain, L-DEM learns to identify similar contexts of the word in the past domains. Here the context of a word means the surrounding words of that word in a domain corpus. We call such context \emph{domain context} (of a word). For this, we introduce a multi-domain meta-learner that can identify similar (or relevant) domain contexts that can be later used in embedding learning in the new domain. To tackle the second challenge, L-DEM augments the new domain corpus with the relevant domain contexts (knowledge) produced by the meta-learner from the past domain corpora and uses the combined data to train the embeddings in the new domain. For example, the word ``Java'' in the programming domain (the new domain), the meta-learner will produce similar domain contexts from some previous domains like a programming language, software engineering, operating systems, etc. These domain contexts will be combined with the new domain corpus for ``Java" to train the new domain embeddings.
+The paper focuses on a meta-learning system called L-DEM (\underline{L}ifelong \underline{D}omain \underline{E}mbedding via \underline{M}eta-learning).
+For the first challenge, L-DEM learns to identify similar contexts of the word in the past domains for each word in the new domain. 
+The context of a word means the surrounding words of that word in a domain corpus. 
+Thus, we call such context \emph{domain context}. 
+To solve this challenge, we introduce a multi-domain meta-learner that can identify similar (or relevant) domain contexts.
+This meta-learner can later be used in embedding learning in the new domain. 
+
+To tackle the second challenge, L-DEM aims to augment or combine the new domain corpus with the relevant domain contexts (knowledge).
+Note that those relevant contexts are the predictions from the meta-learner.
+As in the previous example of the word ``Java'', the meta-learner can produce similar domain contexts from some previous domains like a programming language, software engineering, operating systems, etc. In the end, these domain contexts will be combined with the new domain corpus (for ``Java'') to train the new domain embeddings.
 
 \textbf{Related Works}
 \label{chap3:rw}
@@ -55,7 +80,7 @@ Many earlier methods used complex neural networks \cite{mikolov2013linguistic}.
 More recently, a simple and effective unsupervised model called skip-gram (or word2vec in general) \cite{mikolov2013distributed,mikolov2013linguistic} was proposed to turn a plain text corpus into large-scale training examples without any human annotation.
 It uses the current word to predict the surrounding words in a context window.
 The learned weights for each word are the embedding of that word.
-Although some embeddings trained using large scale corpora are available \cite{pennington2014glove,bojanowski2016enriching}, they are often sub-optimal for domain-specific tasks \cite{bollegala-maehara-kawarabayashi:2015:ACL-IJCNLP,yang-lu-zheng:2017:EMNLP2017,xu_acl2018,Xu2018pro}. 
+Although there exists pre-trained embeddings \cite{pennington2014glove,bojanowski2016enriching}, they are sub-optimal for domain tasks \cite{bollegala-maehara-kawarabayashi:2015:ACL-IJCNLP,yang-lu-zheng:2017:EMNLP2017,xu_acl2018,Xu2018pro}. 
 However, a single domain corpus is often too small for training high-quality embeddings \cite{Xu2018pro}.
 
 Our problem setting is related to \textit{Lifelong Learning} (LL). Much of the work on LL focused on supervised learning \cite{Thrun1996learning,Silver2013,ChenLiu2016}.
@@ -126,9 +151,9 @@ Making the model small but high-throughput is crucial.
 This is because the meta-learner is required in a high-throughput inference setting, where every word from a new domain needs to have context similarities with the same word from all past domains. 
 
 The proposed pairwise model has only four layers. 
-One shared fully-connected layer (with $l_1$-norm) is used to learn two continuous representations from two (discrete) input feature vectors.
+One shared dense layer (with $l_1$-norm) is used to learn two continuous representations from two (discrete) input feature vectors.
 A matching function is used to compute the representation of distance in a high-dimensional space.
-Lastly, a fully-connected layer and a sigmoid layer are used to produce the similarity score.
+Lastly, a fully-connected layer and a sigmoid layer together predicts the similarity score.
 The model is parameterized as follows:
 \begin{equation}
 \sigma \big( \bm{W}_2 \cdot \text{abs}\big( ( \bm{W}_1 \cdot \frac{\mathbf{x}_{w_{i, j, k}}}{ |\mathbf{x}_{w_{i, j, k}}|_1 }) - (\bm{W}_1 \cdot \frac{\mathbf{x}_{w_{i, j', k'}} }{ |\mathbf{x}_{w_{i, j', k'}}|_1 } ) \big) + b_2 \big) ,
@@ -177,6 +202,7 @@ A negative example is exampled as $(\mathbf{x}_{w_{i, n+1, 1}}, \mathbf{x}_{w_{i
 The initial weights of $M_{n+1}$ are set as the trained weights of the base meta-learner $M$. 
 
 \scalebox{0.75}{
+\centering
 \begin{algorithm}[H]
 \label{chap3:alg:ll}
 \LinesNumbered
@@ -231,7 +257,7 @@ Lastly, all relevant past knowledge $\mathcal{A}$ is returned.
 We now produce the new domain embeddings via a modified version of the skip-gram model \cite{mikolov2013distributed} that can take both the new domain corpus $D_{n+1}$ and the relevant past knowledge $\mathcal{A}$.
 Given a new domain corpus $D_{n+1}$ with the vocabulary $V_{n+1}$, the goal of the skip-gram model is to learn a vector representation for each word $w_{i} \in V_{n+1}$ in that domain
 (we omit the subscript $_{n+1}$ in $w_{i, n+1}$ for simplicity).
-Assume the domain corpus is represented as a sequence of words $D_{n+1}=(w_1, \dots, w_T)$, the objective of the skip-gram model maximizes the following log-likelihood:
+Assume the domain corpus is represented as a sequence of words $D_{n+1}=(w_1, \dots, w_T)$, the objective of the skip-gram model is:
 \begin{equation}
 \label{chap3:eq:sg}
 \begin{split}
@@ -266,7 +292,9 @@ We do not evaluate the learned embeddings directly as in \cite{mikolov2013distri
 
 \textbf{Datasets}
 
-We use the Amazon Review datasets from \cite{HeMcA16a}, which is a collection of multiple-domain corpora. We consider each second-level category (the first level is department) as a domain and aggregate all reviews under each category as one domain corpus. This ends up with a rather diverse domain collection. 
+We use the Amazon Review datasets from \cite{HeMcA16a}, which is a collection of multiple-domain corpora. We use the second-level categories (the first level is a department) as domains.
+In the end, we have a rather diverse domain collection. 
+We aggregate all reviews under each category to form one domain corpus. 
 We first randomly select 56 ($m$) domains as the first $m$ past domains to train and evaluate the base meta-learner.
 Then from rest domains, we sample three random collections with 50, 100 and 200 ($n-m$) domains corpora, respectively, as three settings of past domains.
 These collections are used to test the performance of different numbers of past domains.
@@ -473,7 +501,8 @@ This naturally ended with more deeper reasoning and general features from contex
 \section{Motivation}
 \label{chap4:sec:motivation}
 
-Although BERT aims to learn contextualized representations across a wide range of NLP tasks (to be task-agnostic), leveraging BERT alone still leaves the domain challenges unresolved (as BERT is trained on Wikipedia articles and has almost no understanding of the text on a particular domain).
+Although BERT aims to learn contextualized representations across a wide range of NLP tasks (to be task-agnostic), we notice that using BERT alone still leaves the domain challenges unsolved.
+This is because BERT's training corpus is Wikipedia articles, which has almost no understanding of the text on a particular domain.
 As such, BERT only learns features for text in general but largely ignores knowledge for a particular domain.
 Also, since BERT aims to learn features for almost all end tasks, it introduces another challenge of task-awareness, called the \textit{task challenge}.
 This challenge arises when the task-agnostic BERT meets the limited number of fine-tuning examples in end tasks, which is insufficient to fine-tune BERT to ensure full task-awareness of the system.
@@ -493,7 +522,7 @@ I explore two (2) training task (or step) into the existing framework: post-trai
 \vspace{-3mm}
 \end{figure}
 
-Post-training aims to adapt pre-training LM from general text to domain-specific text, whereas pre-tuning aims to adapt pre-trained LM to a particular task.
+Post-training aims to adapt pre-trained LM from general text to domain-specific text, whereas pre-tuning aims to adapt pre-trained LM to a particular task.
 
 \subsection{-- Post-training of Language Models}
 \label{chap4:sec:post-training}
@@ -514,9 +543,10 @@ $\textbf{BERT}_\textbf{LARGE}$: 24 layers, 1024 hidden dimensions and 16 attenti
 %Given MRC is a general task with answers of questions covering almost all document contents, a large-scale MRC supervised corpus may also benefit AE and ASC.
 %Eventually, we aim to have a general-purpose post-training strategy that can exploit the above two kinds of knowledge for end tasks.
 
-To post-train on domain knowledge, we leverage the two novel pre-training objectives from BERT: masked language model (MLM) and next sentence (The BERT paper refers a sentence as a piece of text with one or more natural language sentences.) prediction (NSP). The former predicts randomly masked words and the latter detects whether two sides of the input are from the same document or not.~A training example is formulated as $(\texttt{[CLS]}, x_{1:j}, \texttt{[SEP]}, x_{j+1:n}, \texttt{[SEP]})$, where $x_{1:n}$ is a document (with randomly masked words) split into two sides $x_{1:j}$ and $x_{j+1:n}$ and \texttt{[SEP]} separates those two.
+To post-train on domain knowledge, we use two novel objectives: masked language model (MLM) and next sentence (The BERT paper refers a sentence as a piece of text with one or more natural language sentences.) prediction (NSP). MLM predicts randomly masked words from the input.
+NSP is a binary classification task that detects whether two sides of the input are from the same document.~A training example is formulated as $(\texttt{[CLS]}, x_{1:j}, \texttt{[SEP]}, x_{j+1:n}, \texttt{[SEP]})$, where $x_{1:n}$ is a document (with randomly masked words) split into two sides $x_{1:j}$ and $x_{j+1:n}$ and \texttt{[SEP]} separates those two.
 
-MLM is crucial for injecting review domain knowledge and for alleviating the bias of the knowledge from Wikipedia. 
+MLM is an important task to inject domain knowledge and reduce the bias of knowledge of Wikipedia. 
 For example, in the Wikipedia domain, BERT may learn to guess the \texttt{[MASK]} in ``The \texttt{[MASK]} is bright'' as ``sun''. But in a laptop domain, it could be ``screen''.
 Further, if the \texttt{[MASK]}ed word is an opinion word in ``The touch screen is \texttt{[MASK]}'', this objective challenges BERT to learn the representations for fine-grained opinion words like ``great'' or ``terrible'' for \texttt{[MASK]}.
 The objective of NSP further encourages BERT to learn contextual representation beyond word-level.
@@ -535,6 +565,7 @@ One major issue of post-training on such a loss is the prohibitive cost of GPU m
 Instead of updating parameters over a batch, we divide a batch into multiple sub-batches and accumulate gradients on those sub-batches before parameter updates. This allows for a smaller sub-batch to be consumed in each iteration.
 
 \scalebox{0.7}{
+\centering
 \begin{algorithm}[H]
 \label{chap4:alg:post-training}
 \LinesNumbered
@@ -554,8 +585,8 @@ $\Theta \gets \text{ParameterUpdates}(\nabla_\Theta \mathcal{L}) $ \;
 \end{algorithm}
 }
 
-Algorithm 1 describes one training step and takes one batch of data on domain knowledge (DK) $\mathcal{D}_\text{DK}$ and one batch of MRC training data $\mathcal{D}_\text{MRC}$ to update the parameters $\Theta$ of BERT.
-In line 1, it first initializes the gradients $\nabla_\Theta$ of all parameters as 0 to prepare gradient computation. Then in lines 2 and 3, each batch of training data is split into $u$ sub-batches. Lines 4-7 spread the calculation of gradients to $u$ iterations, where the data from each iteration of sub-batches are supposed to be able to fit into GPU memory.
+Algorithm 1 illustrates one training step. It assumes to take one batch of data about domain knowledge (DK) $\mathcal{D}_\text{DK}$ and one batch of MRC training data $\mathcal{D}_\text{MRC}$ to update the parameters $\Theta$ of BERT.
+In line 1, it first initializes the gradients $\nabla_\Theta$ of all trainable weights to 0. Then in lines 2 and 3, each batch of training data is split into $u$ sub-batches. Lines 4-7 spread the calculation of gradients to $u$ iterations, where the data from each iteration of sub-batches are supposed to be able to fit into GPU memory.
 In line 5, it computes the partial joint loss $\mathcal{L}_\text{partial}$ of two sub-batches $\mathcal{D}_{\text{DK}, i}$ and $\mathcal{D}_{\text{MRC}, i}$ from the $i$-th iteration through forward pass.
 Note that the summation of two sub-batches' losses is divided by $u$, which compensates the scale change introduced by gradient accumulation in line 6.
 Line 6 accumulates the gradients produced by backpropagation from the partial joint loss. To this end, accumulating the gradients $u$ times is equivalent to computing the gradients on the whole batch once. But the sub-batches and their intermediate hidden representations during the $i$-th forward pass can be discarded to save memory space.
@@ -565,7 +596,7 @@ Only the gradients $\nabla_\Theta$ are kept throughout all iterations and used t
 \textbf{Setting for End Tasks}
 
 We aim for 3 review-based tasks to evaluate the post-trained BERT: review reading comprehension (RRC), aspect extraction (AE) and aspect sentiment classification (ASC).
-The details of these 3 tasks are intoduced in \ref{chap6:nlp}.
+The details of these 3 tasks are introduced in \ref{chap6:nlp}.
 Here we only discuss the formulation of these 3 tasks under the setting of BERT.
 The overall illustrations of the formulation are depicted in \ref{chap6:fig:overview}.
 
@@ -586,11 +617,12 @@ As such, the final answer will always be a valid text span from the review as $a
 Training the RRC model involves minimizing the loss that is designed as the averaged cross entropy on the two pointers: $$\mathcal{L}_{\text{RRC}}=-\frac{\sum \log l_1 \mathbb{I}(s)+ \sum \log l_2 \mathbb{I}(e)}{2},$$ where $\mathbb{I}(s)$ and $\mathbb{I}(e)$ are one-hot vectors representing the ground truths of pointers.
 
 As a core task in ABSA, aspect extraction (AE) aims to find aspects that reviewers have expressed opinions on \cite{hu2004mining}. 
-In supervised settings, it is typically modeled as a sequence labeling task, where each token from a sentence is labeled as one of $\{\textit{\underline{B}egin}, \textit{\underline{I}nside}, \textit{\underline{O}utside}\}$. A continuous chunk of tokens that are labeled as one \textit{B} and followed by zero or more \textit{I}s forms an aspect.
+In supervised settings, it is typically modeled as a task of sequence labeling.
+In such a task, each token from a sentence is labeled as one of $\{\textit{\underline{B}egin}, \textit{\underline{I}nside}, \textit{\underline{O}utside}\}$. A continuous chunk of tokens that are labeled as one \textit{B} and followed by zero or more \textit{I}s forms an aspect.
 The input sentence with $m$ words is constructed as $x=(\texttt{[CLS]}, x_1, \dots, x_m, \texttt{[SEP]})$.
 After $h=\text{BERT}(x)$, we apply a dense layer and a softmax for each position of the sequence: $l_3=\text{softmax}(W_3 \cdot h + b_3)$, where $W_3 \in \mathbb{R}^{3*r_h}$ and $b_3 \in \mathbb{R}^3$ (3 is the total number of labels (\textit{BIO})).  Softmax is applied along the dimension of labels for each position and $l_3 \in [0, 1]^{3*|x|}$. The labels are predicted as taking argmax function at each position of $l_3$ and the loss function is the averaged cross entropy across all positions of a sequence.
 
-As a subsequent task of AE, aspect sentiment classification (ASC) aims to classify the sentiment polarity (positive, negative, or neutral) expressed on an aspect extracted from a review sentence.
+As a subsequent job of AE, aspect sentiment classification (ASC) aims to find the sentiment polarity expressed on an aspect.
 There are two inputs to ASC: an aspect and a review sentence mentioning that aspect.
 
 Let $x=(\texttt{[CLS]}, q_1, \dots, q_m, \texttt{[SEP]}, d_1, \dots, d_n, \texttt{[SEP]})$, where $q_1, \dots, q_m$ now is an aspect (with $m$ tokens) and $d_1, \dots, d_n$ is a review sentence containing that aspect.
@@ -723,10 +755,11 @@ The results of RCRC is discussed in \ref{chap6:sec:rcrc}.
 \chapter{Lifelong Graph Representation Learning}
 \label{chap5:graph}
 
-Besides classification and word representations that aims to turn unstructured text into a structured form, knowledge graph is an important form of structured data that possess human knowledge.
-Different from unstructured text, knowledge graph is more interpretable and maintainable by human.
-Given the discrete nature of the knowledge graph, it enables the dynamic accumulation of structured knowledge for future use, which is the goal of lifelong learning.
+Besides classification and word representations that aims to turn unstructured text into a structured form, a knowledge graph is an important form of structured data that possess human knowledge.
+Different from unstructured text, the knowledge graph is more interpretable and maintainable by a human.
+Given the discrete nature of the knowledge graph, it enables the dynamic accumulation of structured knowledge for future use, which is well-aligned with the goal of lifelong learning.
 In this setting, one task in lifelong learning can contribute to the updates of a knowledge graph and the future task can leverage the updated knowledge graph for better reasoning or prediction.
+Different from lifelong learning in the latent space, knowledge graph yields the advantages of interpretability, maintenance by both humans and machines and a stable structure to avoid catastrophic forgetting.
 Thus, I target a lifelong graph representation learning task, where the model should learn representations for the changes of knowledge graph for better reasoning or prediction.
 
 \section{Motivation}
@@ -737,12 +770,13 @@ This is true for most factoid-based knowledge in the world.
 The changes of the knowledge mostly happen when new events happen and engineers can periodically add new entity or relation to the knowledge graph when enough statistics of data are collected for more reliable updates of knowledge.
 
 However, in contrast, non-factoid knowledge is rather dynamic and needs more updates.
-Non-factoid knowledge can be that knowledge that does not have agreement among a group of people, but particular to one or a small group of people.
+Non-factoid knowledge typically contains knowledge that does not have good agreement among a group of people, but rather particular to one or a small group of people, at least during the period before it comes factoid knowledge.
 There is probably no true or false regarding these kinds of knowledge.
-These include the experience of a user and their preference or sentiment.
+One type of non-factoid knowledge can be the experience of a particular user and their preference or sentiment.
 This kind of knowledge is rather unstable because even the same person can change their mind quickly and a lifelong learning system should be able to capture such changes quickly.
 
-One important application regarding this kind of knowledge is a recommendation, as almost all recommendation models are user-specific models, which have different predictions for different users.
+One important application regarding this kind of knowledge is in personalized machine learning.
+And one well-known personalized machine learning model is a recommendation, as almost all recommendation models are user-specific models, which have different predictions for different users.
 Typically these models aim to learn users and items profile, such as using matrix factorization based on click-through data.
 Unfortunately, existing recommendation models aim to learn static user and item profiles.
 These static profiles cannot capture the changes in users' needs.
@@ -756,10 +790,9 @@ As such, this chapter focuses on designing and maintaining a knowledge graph for
 \section{Lifelong Knowledge Graph Reasoning}
 \label{chap5:sec:reason}
 
-As an example of lifelong representation learning over a dynamic knowledge graph, we demonstrate the usage of dynamic knowledge graph reasoning with an application in dialog system. 
-This task is called conversational recommendation. 
-Conversational recommendation is a combination of dialog system and recommender system and aims to collect a user's up-to-date knowledge for recommendation. 
-We focus on the graph maintanance aspect of conversational recommendation in this chapter and  detail the application side of this task in Chapter \ref{chap6:sec:mgcr}.
+As an example of lifelong representation learning over a dynamic knowledge graph, we demonstrate the usage of dynamic knowledge graph reasoning with an application in a task is called conversational recommendation. 
+Conversational recommendation is a combination of a dialog system and recommender system and aims to collect a user's up-to-date knowledge for recommendation. 
+We focus on the graph maintenance aspect of conversational recommendation in this chapter and detail the application side of this task in Chapter \ref{chap6:sec:mgcr}.
 We call the knowledge graph about a user memory because it is the agent's memory about a user.
  
 \textbf{Memory-grounded Conversational Recommendation}:
@@ -847,7 +880,7 @@ We propose a model called User Memory Graph Reasoner (UMGR) to reason the turn-l
 The predictions from $\hat{y}^\mathcal{C}, \hat{y}^\mathcal{S}$ and $\hat{y}^\mathcal{V}$ essentially provides a ranking over those entity sets.
 For example, when $\hat{y}^\mathcal{A}=$ \textit{Recommendation}, the top-1 entity $\argmax_{e_i \in \mathcal{C}}(\hat{y}^\mathcal{C})$ will be provided to the user.
 Similarly, $\hat{y}^\mathcal{A}=$ \textit{Open Question} is related to the top-1 slot $\argmax_{e_s \in \mathcal{S}}(\hat{y}^\mathcal{S})$ and $\hat{y}^\mathcal{A}=$ \textit{Yes/no Question} is related to the top-1 value $\argmax_{e_v \in \mathcal{V}}(\hat{y}^\mathcal{V})$.
-In this way, all arguments of a dialog act can be mapped to certain entities in the user memory graph for a structured explanation instead of decoding from latent space.
+In this way, all arguments of a dialog policy can be mapped to certain entities in the user memory graph for a structured explanation instead of decoding from latent space.
 
 To enable the reasoning over a user memory graph on-the-fly, we incorporate a Relational Graph Convolutional Networks (R-GCN) \cite{schlichtkrull2018modeling} inside UMGR.
 R-GCN is a GCN \cite{kipf2016semi} with typed relations, where each relation is associated with their weights to enable reasoning over a heterogeneous graph.
@@ -867,7 +900,7 @@ Then each entity in the user memory graph is encoded by multiple layers of R-GCN
 h_j^{(l+1)}=\text{LeakyReLU} \Big(\sum_{r \in \mathcal{R}} \sum_{k \in \mathcal{N}_j^r} \frac{1}{\vert \mathcal{N}_j^r \vert} W_r^{(l)} h_j^{(l)}\Big),
 \end{split}
 \end{equation}
-where $h_j^{(l)}$ ($j$ can be any type of entity) is the hidden state of entity $e_j$ in the $l$-th layer of R-GCN. $\mathcal{N}_j^r$ is entity $e_j$'s neighbor in relation type $r$ and $W_r^{(l)}$ is the weights associated with $r$ in the $l$-th layer to transform $h_j^{(l)}$.
+where $h_j^{(l)}$ ($j$ can be any type of entity) is the hidden dimensions for entity $e_j$ for the $l$-th layer of R-GCN. $\mathcal{N}_j^r$ is entity $e_j$'s neighbor in relation type $r$ and $W_r^{(l)}$ is the weights associated with $r$ in the $l$-th layer to transform $h_j^{(l)}$.
 The R-GCN layer updates the hidden states of each entity with the incoming messages in the form of their neighbors' hidden states type-by-type.
 Then R-GCN sums over all types before passing through the activation.
 The hidden states from the last layer of R-GCN is pasted into an aggregation layer.

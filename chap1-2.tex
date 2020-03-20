@@ -4,50 +4,53 @@ Traditional representation learning (such as softmax-based classification, pre-t
 As the world keeps evolving, emerging knowledge (such as new tasks, domains, entities or relations) typically come with a small amount of data with shifted distributions that challenge the existing representations to be effective.
 As a result, how to effectively learn representations for new knowledge becomes crucial.
 Lifelong learning is a machine learning paradigm that aims to build an AI agent that keeps learning from the evolving world, like humans' learning from the world.
-This dissertation focuses on improving representations on different types of new knowledge (classification, word-level, contextual-level, and knowledge graph) for a myriad of NLP end tasks, ranging from text classification, sentiment analysis, question answering to the more complex dialogue system.
-With the help of lifelong representation learning, tasks are greatly improved beyond general representation learning.
+This dissertation focuses on improving representations on different types of new knowledge (classification, word-level, contextual-level, and knowledge graph) for a myriad of NLP end tasks, ranging from text classification, sentiment analysis, entity recognition, question answering to the more complex dialog system.
+With the help of lifelong representation learning, models' performance on tasks is greatly improved beyond existing general representation learning.
 
 \chapter{Introduction}
 \label{chap1:intro}
 
-Deep learning (DL) has gained significant improvements over the past a few years\cite{Goodfellow-et-al-2016-Book}. 
+Deep learning (DL) has achieved significant performance boosts for machine learning tasks over the past a few years\cite{Goodfellow-et-al-2016-Book}. 
 The core driving force behind deep learning is its capability or capacity to learn knowledgable features or representations automatically from large-scale data.
-This significantly reduces the need of asking humans to curate better features manually.
+This significantly reduces the need for asking humans to curate better features manually.
 As a result, the learned representation gives the model a great advantage to concur with the uncertainty during testing from the unknown world, which can be found in many applications of computer vision and natural language processing.
-The key advantage of deep learning over traditional machine learning models is that the parameter-intensive DL models can consume much more data than traditional ML models to obtain more general representation by inferring the features on-the-fly as a form of reasoning. These learned features, in the end, boost the performance of many tasks.
+The key advantage of deep learning over traditional machine learning models is that by having parameter-intensive models, deep learning models can consume much more data to obtain more general representation by inferring the features on-the-fly as a form of stacked layers of reasoning. 
+Thus, those features shorten the gap between the raw inputs and the features required by an end task.
+Not surprisingly, these learned features, in the end, boost the performance of many tasks.
 
-Following this advantage, how to smartly consume more data to learn general features and avoid specific features is essential for DL models.
+Following this advantage, how to smartly consume more data to learn general features and avoid specific features is essential for the success of DL models.
 Researchers start to pre-train DL models with the hope to encode all features of the world into parameters of DL models.
 Examples can be found in the large-scale pre-training on ImageNet dataset \cite{deng2009imagenet,russakovsky2015imagenet,krizhevsky2012imagenet} in computer vision, or pre-trained word embeddings or language models \cite{peters2018deep,devlin2018bert} in natural language processing (NLP).
 
-\section{Motivation}
+\section{Motivation of Lifelong Learning}
 \label{chap1:motivation}
 Going beyond the classic deep learning approach, simply aggregating existing data into a DL model may not be enough.
-Looking forward, the world keeps evolving and yields new data for new tasks, which probably are long-tailed or heavily-tailed.
+For example, looking towards the future, the world keeps evolving and always yields new data for new tasks, which probably are long-tailed or heavily-tailed.
 This greatly challenges the existing learned representations.
-The existing approach may represent the majority general features well and assume they are generally good to any new knowledge.
+This is because a trained model is typically frozen during inference or testing and never changed.
+The existing approach may represent the majority general features well and assume they are generally good for any new knowledge.
 However, it lacks enough capability to represent the vast kinds of specific features that are required each (new) task.
 To make the learning effective in the long-term, an AI agent must be able to adapt to the changes in the world.
-In contrast, we humans are very sensitive to the changes in the world and the wide spectrum of novel details by having a focus and learning new knowledge and updating our understanding of the world.
-We never use our 6-year-old understanding of the world to solve the problems now. 
+In contrast, we humans are very sensitive to the changes in the world and the wide spectrum of novel details by having a focus with curiosity on new things.
+Later we learn new knowledge and updating our understanding of the world.
+In contrast to the existing machine learning paradigm, we never use our 6-year-old understanding of the world to solve the problems now. 
 
 \section{Research Objectives}
 Motivated by this observation, an AI agent needs to learn representations as to the way humans do in a new machine learning paradigm or a problem called \textbf{lifelong learning}, which aims to build AI agents from a sequence of tasks online.
 
-\textit{lifelong learning} (LL) assumes the learning tasks come in a sequence $\mathcal{T}_1, \mathcal{T}_2, \dots, \mathcal{T}_n$, where the new or $(n+1)$-th task is performed with the help of the knowledge accumulated over the past $n$ tasks \cite{thrun1998lifelong,silver2013lifelong,chen2018lifelong}. 
+\textit{Lifelong Learning} (LL) assumes that the learning tasks come in a sequence denoted as $\mathcal{T}_1, \mathcal{T}_2, \dots, \mathcal{T}_n$, where the new or $(n+1)$-th task is performed with the help of the knowledge accumulated over the past $n$ tasks \cite{thrun1998lifelong,silver2013lifelong,chen2018lifelong}. 
 
 Note that this definition does not specify or constrain the forms or types of each task.
 To name a few, a task can be any learning task, ranging from learning for a new class, learning for a new domain, learning in a heterogeneous form of a new task, to new concept or relation for accumulating the knowledge.
 As such, we can see that the problem or concept of lifelong learning can be applied to a vast amount of concrete machine learning tasks.
 
-As a result, this dissertation focuses on a wide range of machine learning tasks and their usage in NLP applications.
-We aim to cover major types of machine learning tasks in NLP and provide its applications to concrete datasets with experimental results and discussions on the role of lifelong learning for their improvements in performance.
+As a result, this dissertation focuses on a wide range of machine learning tasks and their usage in natural language processing (NLP) applications.
+We aim to cover major types of machine learning tasks in NLP and provide its applications to concrete datasets with experimental results and discussions on the role of lifelong learning for the improvements in their models' performance.
 
 \section{Outlines}
-To make a more clear distinction between different forms of learning tasks and NLP applications, this dissertation is organized by separating lifelong learning tasks and NLP applications and avoid following the structure of each original publication.
+To make a more clear distinction between different forms of learning tasks and NLP applications, this dissertation is organized by separating lifelong learning tasks of different types and their applications to concrete NLP tasks. As a result, the structure of this dissertation may not exactly follow the structure of the papers published in their original form. To build the relevance with the original paper, I list referenced papers at the beginning of each chapter. 
 
-
-I first address open-world learning problems on classification tasks in Chapter \ref{chap2:open}, where traditional classifiers can easily make mistakes on unseen classes that appear during testing or inference. 
+In Chapter \ref{chap2:open}, I first address open-world learning problems on classification tasks, where traditional classifiers can easily make mistakes on unseen classes that appear during testing or inference. 
 This is because most existing classifiers must classify an example from an unseen class to one of existing pre-defined classes during training. 
 I further extend this problem to a dynamic classification task, where some unseen classes can be added to or removed from the set of existing classes while still keeping rejecting the rest unseen classes. We use a meta-learning approach to address this problem into a very general comparison-based classifier.
 As a result, it avoids learning a classifier overfitting to a particular set of classes.
@@ -75,16 +78,20 @@ A graph is a natural way for sharable and interpretable knowledge for humans.
 It can be used for both feature augmentations and reasoning.
 However, the existing approach of graph representation learning mostly assumes a static graph, where the knowledge and reasoning upon knowledge are never changed.
 Lifelong learning is ideal for graph reasoning as it can keep updating graphs and reasoning policy.
-Thus, we rename the term graph as memory graph, indicating the graph is dynamic that can maintain and update reasoning based on newly added knowledge.
+Thus, we rename the term graph as a memory graph, indicating the graph is dynamic that can maintain and update reasoning based on newly added knowledge.
 
 Lastly, in Chapter \ref{chap6:nlp}, I target the usage of lifelong learning over a wide spectrum of NLP tasks.
-I first describe the task in text classification, including product classification (using methods in Chapter \ref{chap2:open}) and review classification (using methods in Chapter \ref{chap3:word}).
-Then I focus on tasks in aspect-based sentiment analysis (ABSA).
+I first describe the tasks in aspect-based sentiment analysis (ABSA).
+ABSA has two important subtasks: aspect extraction and aspect sentiment classification. 
 I first describe the usage of domain word embeddings (from Chapter \ref{chap3:word}) and contextualized word representation (from Chapter \ref{chap4:context}) for aspect extraction.
 Later I discuss the contextualized word representation and the lifelong training algorithm of hard examples for aspect sentiment classification.
-Next, I go through the question-answering problem and focus on machine reading comprehension (MRC) and its novel application to reviews.
+One important issue associated aspect sentiment classification is lacking the capability to learn hard examples that are important for the aspect-level sentiment.
+I address this problem by proposing a training algorithm that focusing on hard examples.
+Next, I switch to a novel problem called complementary entity recognition (CER) in my early years of Ph.D. research.
+I discuss two papers that have the capability of lifelong learning to accumulate past knowledge for entity extraction.
+Then, I go through the question-answering problem and focus on machine reading comprehension (MRC) and its novel application to reviews.
 Lastly, I discuss the usage of lifelong learning for conversational AI. 
-I first describe the usage of pre-tuning for conversational review reading comprehension (CRC).
+I first describe the usage of pre-tuning for a novel problem called review conversational reading comprehension (RCRC).
 Then focus on lifelong graph reasoning for conversational recommendation with dynamic graph reasoning (using the method in Chapter \ref{chap5:graph}).
 
 \chapter{Lifelong Classification}
@@ -93,14 +100,15 @@ Then focus on lifelong graph reasoning for conversational recommendation with dy
 The content of this chapter was previously published as ``Open-world Learning and Application to Product Classification'' in WWW 2019 \cite{xu2019open}, DOI: https://doi.org/10.1145/3308558.3313644, with an arXiv version \footnote{https://arxiv.org/abs/1809.06004} \cite{xu2018open}.
 
 Classification is a well-known and classic problem and the deep learning variant of the classification task typically leverages an activation function that can compute a categorical distribution over a set of classes (e.g., the softmax function).
-This type of classification is called \textit{closed-world classification} because the classes seen in testing must have appeared in training. However, this assumption is often violated in real-world applications. For example, new topics often emerge on a social media site and new categories of products appear daily on e-commerce website. 
+This type of classification is called \textit{closed-world classification} because the classes seen in testing must have appeared in training. However, this assumption is often violated in real-world applications. For example, new topics often emerge on a social media site and new categories of products appear daily on an e-commerce website. 
 A model that cannot detect new/unseen topics or products is hard to function well in such open environments.  
 This is where lifelong learning can be applied to the existing classification problem.
 
 \section{Motivation}
-Generally speaking, an AI agent working in the real world must be able to recognize the classes of things that it has seen/learned before and detect new things that it has not seen and learn to accommodate the new things. This learning paradigm is called \textit{\underline{o}pen-\underline{w}orld \underline{l}earning} (OWL)
+Generally speaking, an AI agent working in the real world must be able to recognize the classes of things that it has seen/learned before and detect new types of things that it has not seen and later learn to accommodate the new things. This learning paradigm is called \textit{\underline{o}pen-\underline{w}orld \underline{l}earning} (OWL)
 \cite{chen2018lifelong,bendale2015towards,fei2016learning}. 
-This is in contrast with the classic supervised learning paradigm which makes the \textit{closed-world assumption} that the classes seen in testing must have appeared in training. With the ever-changing Web, the popularity of AI agents such as intelligent assistants and self-driving cars that need to face the real-world open environment with unknowns, OWL capability is crucial.
+This is in contrast with the well-known supervised learning paradigm, which makes the \textit{closed-world assumption}.
+This assumption indicates that the classes in testing must have appeared during the stage of training. With the ever-changing Web, the popularity of AI agents such as intelligent assistants and self-driving cars that need to face the real-world open environment with unknowns, OWL capability is crucial.
 
 For example, with the growing number of products sold on Amazon from various sellers, it is necessary to have an open-world model that can automatically classify a product based on a set $S$ of product categories.
 An emerging product not belonging to any existing category in $S$ should be classified as ``unseen'' rather than one from $S$.
@@ -141,14 +149,14 @@ Product classification has been studied in \cite{shen2011item,shen2012large,chen
 However, given the dynamic taxonomy in nature, product classification has not been studied as an open-world learning problem.
 
 \section{L2AC Framework}
-Two main challenges for solving open-world learning: (1) how to enable the model to classify examples of seen classes into their respective classes and also detect/reject examples of unseen classes, and (2) how to incrementally include the new/unseen classes when they have enough data without re-training the model.
+I summarize two main challenges involved in open-world learning: (1) how to enable the model to classify examples of seen classes into their respective classes and also detect/reject examples of unseen classes, and (2) how to incrementally include the new/unseen classes when they have enough data without re-training the model.
 As discussed above, existing methods either focus on the challenge (1) or (2), but not both.
 
 To tackle both challenges in an unified approach, I proposes an entirely new OWL method based on meta-learning \cite{thrun2012learning,andrychowicz2016learning,fernando2017pathnet,finn2017model,finn2018probabilistic}. The method is called \textit{\underline{L}earning to \underline{A}ccept \underline{C}lasses} (L2AC). The key novelty of L2AC is that the model maintains a dynamic set $S$ of seen classes that allow new classes to be added or deleted with no model re-training needed. Each class is represented by a small set of training examples. In testing, the meta-classifier only uses the examples of the maintained seen classes (including the newly added classes) on-the-fly for classification and rejection. That is, the learned meta-classifier classifies or rejects a test example by comparing it with its nearest examples from each seen class in $S$. Based on the comparison results, it determines whether the test example belongs to a seen class or not. If the test example is not classified as any seen class in $S$, it is rejected as unseen. Unlike existing OWL models, 
 the parameters of the meta-classifier are not trained on the set of seen classes but on a large number of other classes which can share a large number of features with seen and unseen classes, and thus can work with any seen classification and unseen class rejection without re-training. 
 
 We can see that the proposed method works like the nearest neighbor classifier (e.g., $k$NN). However, the key difference is that we train a meta-classifier to perform both classification and rejection based on a learned metric and a learned voting mechanism. Also, 
-$k$NN cannot do rejection on unseen classes. 
+$k$NN cannot do rejection of unseen classes. 
 
 As an overview, \ref{chap2:fig:overview} depicts how L2AC classifies a test example into an existing seen class or rejects it as from an unseen class. The training process for the meta-classifier is not shown, which is detailed in Chapter \ref{chap2:sec:train}. 
 The L2AC framework has two major components: a ranker and a meta-classifier. 
@@ -196,7 +204,7 @@ We will detail a simple encoder implementation in Chapter \ref{chap2:sec:exp}.
 
 Further, we save the continuous representations of the examples into the memory of the meta-classifier.
 So later, the top-$k$ examples can be efficiently retrieved via the index (address) in the memory. 
-The memory is essentially a matrix $E \in \mathbb{R} ^{n \times |h|}$, where $n$ is the number of all examples from seen classes and $|h|$ is the size of the hidden dimensions.
+The memory is essentially a matrix $E \in \mathbb{R} ^{n \times |h|}$, where $n$ means the total number of examples from seen classes and $|h|$ is the size of the hidden dimensions.
 Note that we will still use $x$ instead of $h$ to refer to an example for brevity.
 Given the test example $x_t$, the meta-classifier first looks up the actual continuous representations $x_{a_{1:k} }$ of the top-$k$ examples for a seen class.
 Then the meta-classifier computes the similarity score between $x_t$ and each $x_{a_{i} }$ ($1\le i \le k$) individually via a 1-vs-many matching layer as described next. 
@@ -235,7 +243,7 @@ As a result, the meta-classifier can have more reliable predictions, which is st
 
 We adopt a (many-to-one) BiLSTM \cite{hochreiter1997long,schuster1997bidirectional} as the aggregation layer.
 We set the output size of BiLSTM to 2 (1 per the direction of LSTM). 
-Then the output of BiLSTM is connected to a fully-connected layer followed by a sigmoid function that outputs the probability.
+Later, the output hidden states of BiLSTM are connected to a dense layer followed by a sigmoid function that outputs the probability.
 The computation of the meta-classifier for a given test example $x_t$ and $x_{a_{1:k}}$ for a seen class $c$ can be summarized as: 
 \begin{equation}
     \label{chap2:eq:p}
@@ -334,7 +342,7 @@ Weighted F1 is computed as
 \begin{equation}
 \sum_{c\in S\cup\{c_\text{rej}\} } \frac{N_c}{\sum_{c\in S\cup\{c_\text{rej}\}}N_c  }\cdot \text{F1}_c,
 \end{equation}
-where $N_c$ is the number of examples for class $c$ and $\text{F1}_c$ is the F1 score of that class.
+where $N_c$ is the total number of examples for class $c$. $\text{F1}_c$ is the F1 score of that class.
 We use this metric because macro F1 has a bias on the importance of rejection when the seen class set is small (macro F1 treats the rejection class as equally important as one seen class).
 For example, when the number of seen classes is small, the rejection class should have a higher weight as a classifier on a small seen set is more likely challenged by examples from unseen classes.
 Further, to stabilize the results, we train all models with 10 different initializations and average the results.
@@ -403,7 +411,7 @@ L2AC-$k$5-$n$19 & 93.15(0.24) & 86.9(0.45) & 86.62(0.49) & 86.48(0.43) & \textbf
 \label{chap2:fig:kn}
 \end{figure*}
 
-To the best of our knowledge, DOC \cite{shu-xu-liu:2017:EMNLP2017} is the only state-of-the-art baseline for open-world learning (with rejection) for text classification. It has been shown in \cite{shu-xu-liu:2017:EMNLP2017} that DOC significantly outperforms the methods CL-cbsSVM and cbsSVM in~\cite{fei2016learning} and OpenMax in~\cite{bendale2016towards}. OpenMax is a state-of-the-art method for image classification with rejection capability. 
+DOC \cite{shu-xu-liu:2017:EMNLP2017} is a state-of-the-art baseline for text classification in the open-world learning (with rejection) setting. It has been shown in \cite{shu-xu-liu:2017:EMNLP2017} that DOC significantly outperforms the methods CL-cbsSVM and cbsSVM in~\cite{fei2016learning} and OpenMax in~\cite{bendale2016towards}. OpenMax is a state-of-the-art method for image classification with rejection capability. 
 To answer RQ2, we use DOC and its variants to show that the proposed method has comparable performance with the best open-world learning method with re-training.
 Note that DOC cannot incrementally add new classes. 
 So we re-train DOC over different sets of seen classes from scratch every time new classes are added to that set.
